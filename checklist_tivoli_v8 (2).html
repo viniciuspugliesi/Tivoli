@@ -1,0 +1,2863 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Plano de Abertura — Democrata Tivoli</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+  :root {
+    --red: #CC1B1B;
+    --dark: #161616;
+    --mid: #242424;
+    --card: #2A2A2A;
+    --light: #F0EDE8;
+    --gray: #7A7A7A;
+    --green: #2D9E5F;
+    --amber: #D97706;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--dark); color: var(--light); font-family: 'DM Sans', sans-serif; min-height: 100vh; padding-bottom: 60px; }
+
+  /* HEADER */
+  header { background: var(--red); padding: 20px 24px 16px; display: flex; justify-content: space-between; align-items: flex-end; }
+  .eyebrow { font-size: 0.6rem; letter-spacing: 3px; text-transform: uppercase; color: rgba(255,255,255,0.6); margin-bottom: 4px; }
+  header h1 { font-family: 'Bebas Neue', sans-serif; font-size: 2rem; letter-spacing: 2px; color: #fff; line-height: 1; }
+  .inaug-block { text-align: right; }
+  .inaug-block .ilabel { font-size: 0.58rem; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.6); }
+  .inaug-block .idate { font-family: 'Bebas Neue', sans-serif; font-size: 1.5rem; color: #fff; letter-spacing: 2px; line-height: 1.1; }
+  .inaug-block .idays { font-size: 0.65rem; color: rgba(255,255,255,0.55); letter-spacing: 1px; }
+
+  /* BUDGET */
+  .budget-strip { background: #1E1E1E; padding: 10px 24px; display: flex; border-bottom: 1px solid #303030; }
+  .bitem { flex: 1; display: flex; flex-direction: column; }
+  .bitem + .bitem { border-left: 1px solid #333; padding-left: 16px; margin-left: 16px; }
+  .blabel { font-size: 0.58rem; letter-spacing: 2px; text-transform: uppercase; color: var(--gray); }
+  .bval { font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem; color: #fff; letter-spacing: 1px; }
+  .bcur { font-family: 'DM Sans', sans-serif; font-size: 0.72rem; color: var(--gray); }
+
+  /* PROGRESS */
+  .prog-wrap { padding: 12px 24px; background: var(--mid); border-bottom: 1px solid #303030; }
+  .prog-bar-outer { height: 6px; background: #3A3A3A; border-radius: 99px; overflow: hidden; display: flex; }
+  .prog-bar-done { height: 100%; background: var(--green); transition: width 0.4s ease; }
+  .prog-bar-prog { height: 100%; background: var(--amber); transition: width 0.4s ease; }
+  .prog-counts { display: flex; gap: 14px; margin-top: 8px; flex-wrap: wrap; }
+  .prog-chip { font-size: 0.65rem; display: flex; align-items: center; gap: 5px; color: var(--gray); }
+  .prog-chip .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .dot-g { background: var(--green); }
+  .dot-a { background: var(--amber); }
+  .dot-x { background: #444; }
+
+  /* INAUG CARD */
+  .inaug-card {
+    margin: 0 20px 8px;
+    background: linear-gradient(135deg, #8B0000 0%, var(--red) 100%);
+    border-radius: 12px; padding: 16px 18px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .ic-label { font-size: 0.6rem; letter-spacing: 3px; text-transform: uppercase; color: rgba(255,255,255,0.65); margin-bottom: 4px; }
+  .ic-date { font-family: 'Bebas Neue', sans-serif; font-size: 2rem; color: #fff; letter-spacing: 3px; line-height: 1; }
+  .ic-right { text-align: right; }
+  .ic-days-num { font-family: 'Bebas Neue', sans-serif; font-size: 2.4rem; color: rgba(255,255,255,0.9); line-height: 1; }
+  .ic-days-label { font-size: 0.6rem; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.55); }
+
+  .section-label { font-size: 0.58rem; letter-spacing: 3px; text-transform: uppercase; color: #555; padding: 18px 22px 8px; }
+
+  /* UNIFIED LIST */
+  .list-wrap { padding: 0 20px; display: flex; flex-direction: column; }
+
+  .item-card {
+    background: var(--card);
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-bottom: 8px;
+    border-left: 3px solid #3A3A3A;
+    transition: background 0.2s;
+  }
+  .item-card.state-progress { background: #2d2718; border-left-color: var(--amber); }
+  .item-card.state-done     { background: #1e2a22; border-left-color: var(--green); }
+  .item-card.state-pending  { border-left-color: #3A3A3A; }
+
+  /* category color on left border when pending */
+  .item-card.cat-urgente.state-pending  { border-left-color: #CC3333; }
+  .item-card.cat-contrato.state-pending { border-left-color: var(--green); }
+  .item-card.cat-preinaug.state-pending { border-left-color: var(--amber); }
+  .item-card.cat-venc.state-pending     { border-left-color: #4a7adb; }
+  .item-card.cat-riscos.state-pending   { border-left-color: #c05050; }
+  .item-card.cat-forn.state-pending     { border-left-color: var(--red); }
+  .item-card.risk-highlight.state-pending { background: #2a1a1a; border-left-color: var(--red); }
+
+  .item-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+
+  .item-title { font-size: 0.88rem; font-weight: 500; color: #e8e8e8; line-height: 1.3; flex: 1; }
+  .item-title.done-text { text-decoration: line-through; color: var(--gray); }
+
+  .item-right { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex-shrink: 0; }
+
+  .status-tag { font-size: 0.58rem; letter-spacing: 1px; text-transform: uppercase; padding: 3px 8px; border-radius: 4px; font-weight: 600; white-space: nowrap; }
+  .tag-pending  { background: rgba(255,255,255,0.05); color: #555; }
+  .tag-progress { background: rgba(217,119,6,0.18);   color: var(--amber); }
+  .tag-done     { background: rgba(45,158,95,0.18);    color: var(--green); }
+
+  .cat-tag { font-size: 0.55rem; letter-spacing: 1px; text-transform: uppercase; padding: 2px 6px; border-radius: 4px; font-weight: 600; white-space: nowrap; }
+  .ctag-urgente  { background: rgba(204,27,27,0.15);  color: #e07070; }
+  .ctag-obra     { background: rgba(255,255,255,0.07); color: #888; }
+  .ctag-contrato { background: rgba(45,158,95,0.12);  color: #5db880; }
+  .ctag-preinaug { background: rgba(217,119,6,0.12);  color: #d4953a; }
+  .ctag-venc     { background: rgba(74,122,219,0.15); color: #7aa0e0; }
+  .ctag-riscos   { background: rgba(192,80,80,0.15);  color: #d07070; }
+  .ctag-contato  { background: rgba(80,150,192,0.15); color: #70b0e0; }
+  .ctag-caderno  { background: rgba(120,80,192,0.15); color: #b070e0; }
+  .ctag-operacao { background: rgba(80,192,140,0.15); color: #50c08c; }
+
+  /* ── DOC PANEL ── */
+  .doc-group-title { font-size: 0.6rem; letter-spacing: 3px; text-transform: uppercase; color: #555; padding: 16px 0 8px; }
+  .doc-card { background: var(--card); border-radius: 12px; padding: 14px; margin-bottom: 10px; display: flex; gap: 12px; border-left: 3px solid #333; }
+  .doc-icon { font-size: 1.4rem; flex-shrink: 0; margin-top: 2px; }
+  .doc-info { flex: 1; min-width: 0; }
+  .doc-name { font-size: 0.88rem; font-weight: 600; color: #eee; line-height: 1.3; margin-bottom: 4px; }
+  .doc-meta { font-size: 0.7rem; color: var(--gray); line-height: 1.4; margin-bottom: 8px; }
+  .doc-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 8px; }
+  .doc-tag { font-size: 0.58rem; letter-spacing: 1px; text-transform: uppercase; padding: 2px 7px; border-radius: 4px; font-weight: 600; background: rgba(255,255,255,0.06); color: #888; }
+  .doc-tag.red   { background: rgba(204,27,27,0.15);  color: #e07070; }
+  .doc-tag.green { background: rgba(45,158,95,0.15);  color: var(--green); }
+  .doc-tag.amber { background: rgba(217,119,6,0.15);  color: var(--amber); }
+  .doc-highlights { display: flex; flex-direction: column; gap: 3px; }
+  .doc-hl { font-size: 0.7rem; color: #888; line-height: 1.45; }
+  .doc-forn-table { display: flex; flex-direction: column; gap: 0; margin-top: 6px; border-radius: 8px; overflow: hidden; background: #222; }
+  .doc-forn-row { display: flex; gap: 6px; padding: 7px 10px; border-top: 1px solid #2e2e2e; align-items: baseline; }
+  .doc-forn-row:first-child { border-top: none; }
+  .dfn { font-size: 0.78rem; font-weight: 600; color: #ddd; flex: 0 0 100px; }
+  .dfc { font-size: 0.68rem; color: var(--gray); flex: 1; }
+  .dfd { font-size: 0.68rem; color: #aaa; flex: 0 0 auto; text-align: right; }
+
+  /* ── SIMULADOR ── */
+  .sim-group { background: var(--card); border-radius: 12px; overflow: hidden; margin-bottom: 8px; }
+  .sim-row { display: flex; align-items: center; justify-content: space-between; padding: 11px 14px; border-top: 1px solid #333; gap: 10px; }
+  .sim-row:first-child { border-top: none; }
+  .sim-label { font-size: 0.82rem; color: #ccc; flex: 1; }
+  .sim-unit { font-size: 0.62rem; color: var(--gray); margin-left: 4px; }
+  .sim-input { background: #1a1a1a; border: 1px solid #444; border-radius: 7px; color: #fff; font-size: 0.88rem; font-family: 'DM Sans', sans-serif; padding: 6px 10px; width: 110px; text-align: right; }
+  .sim-input:focus { outline: none; border-color: var(--red); }
+
+  .sim-dre-wrap { background: var(--card); border-radius: 12px; overflow: hidden; margin-bottom: 8px; }
+  .sim-dre-head { display: grid; grid-template-columns: 100px repeat(5, 1fr); background: #1e1e1e; padding: 8px 12px; gap: 6px; }
+  .sim-dre-head div { font-size: 0.6rem; letter-spacing: 1px; text-transform: uppercase; color: var(--gray); text-align: right; }
+  .sim-dre-head div:first-child { text-align: left; }
+  .sim-dre-row { display: grid; grid-template-columns: 100px repeat(5, 1fr); padding: 8px 12px; gap: 6px; border-top: 1px solid #2e2e2e; }
+  .sim-dre-row.total { background: #222; }
+  .sim-dre-row.highlight { background: #1c2a1c; }
+  .sim-dre-row.negative { }
+  .sim-dre-cell { font-size: 0.72rem; color: #ccc; text-align: right; }
+  .sim-dre-cell.label { text-align: left; color: var(--gray); font-size: 0.68rem; }
+  .sim-dre-cell.red { color: #e07070; }
+  .sim-dre-cell.green { color: var(--green); }
+  .sim-dre-cell.white { color: #fff; font-weight: 600; }
+
+  .sim-result-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+  .sim-kpi { background: var(--card); border-radius: 10px; padding: 12px 14px; border-left: 3px solid var(--red); }
+  .sim-kpi.green { border-left-color: var(--green); }
+  .sim-kpi.amber { border-left-color: var(--amber); }
+  .sim-kpi.blue  { border-left-color: #4a7adb; }
+  .sim-kpi-lbl { font-size: 0.58rem; letter-spacing: 2px; text-transform: uppercase; color: var(--gray); margin-bottom: 4px; }
+  .sim-kpi-val { font-family: 'Bebas Neue', sans-serif; font-size: 1.25rem; color: #fff; letter-spacing: 1px; }
+  .sim-kpi-val.pos { color: var(--green); }
+  .sim-kpi-val.neg { color: #e07070; }
+
+  .sim-selic-wrap { background: var(--card); border-radius: 12px; overflow: hidden; margin-bottom: 8px; }
+  .sim-selic-title { background: #1e1e1e; padding: 10px 14px; font-size: 0.62rem; letter-spacing: 2px; text-transform: uppercase; color: var(--gray); }
+  .sim-selic-row { display: flex; justify-content: space-between; padding: 8px 14px; border-top: 1px solid #2e2e2e; }
+  .sim-selic-year { font-size: 0.75rem; color: var(--gray); }
+  .sim-selic-val { font-size: 0.75rem; color: #aaa; font-weight: 500; }
+
+  /* ── SAZONALIDADE ── */
+  .sazon-wrap { padding: 0 20px; }
+  .sazon-fat-row { background: var(--card); border-radius: 10px; padding: 12px 16px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+  .sazon-fat-label { font-size: 0.82rem; color: #ccc; }
+  .sazon-fat-val { font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem; color: #fff; letter-spacing: 1px; }
+
+  .sazon-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 8px; }
+  .sazon-card { background: var(--card); border-radius: 10px; overflow: hidden; }
+  .sazon-card-head { background: #222; padding: 8px 12px; display: flex; justify-content: space-between; align-items: center; }
+  .sazon-month { font-family: 'Bebas Neue', sans-serif; font-size: 0.95rem; letter-spacing: 2px; color: #fff; }
+  .sazon-pct-wrap { display: flex; align-items: center; gap: 6px; }
+  .sazon-pct-input { background: #1a1a1a; border: 1px solid #444; border-radius: 5px; color: var(--amber); font-size: 0.82rem; font-family: 'DM Sans', sans-serif; font-weight: 600; padding: 3px 6px; width: 62px; text-align: right; }
+  .sazon-pct-input:focus { outline: none; border-color: var(--red); }
+  .sazon-pct-sym { font-size: 0.72rem; color: var(--gray); }
+  .sazon-body { padding: 10px 12px; }
+  .sazon-val { font-family: 'Bebas Neue', sans-serif; font-size: 1.3rem; color: #fff; letter-spacing: 1px; }
+  .sazon-bar-outer { height: 4px; background: #333; border-radius: 99px; overflow: hidden; margin-top: 6px; }
+  .sazon-bar-inner { height: 100%; background: var(--red); border-radius: 99px; transition: width 0.3s ease; }
+  .sazon-bar-inner.high { background: var(--green); }
+  .sazon-bar-inner.low  { background: #555; }
+
+  .sazon-total-row { background: #1e1e1e; border-radius: 10px; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; border: 1px solid #333; }
+  .sazon-total-label { font-size: 0.62rem; letter-spacing: 2px; text-transform: uppercase; color: var(--gray); }
+  .sazon-total-val { font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem; letter-spacing: 1px; }
+  .sazon-total-val.ok  { color: var(--green); }
+  .sazon-total-val.err { color: #e07070; }
+
+  .sazon-anual-wrap { background: var(--card); border-radius: 10px; overflow: hidden; margin-bottom: 8px; }
+  .sazon-anual-head { background: #1e1e1e; padding: 10px 14px; font-size: 0.62rem; letter-spacing: 2px; text-transform: uppercase; color: var(--gray); }
+  .sazon-anual-row { display: flex; justify-content: space-between; align-items: center; padding: 9px 14px; border-top: 1px solid #2e2e2e; }
+  .sazon-anual-year { font-family: 'Bebas Neue', sans-serif; font-size: 0.95rem; letter-spacing: 1px; color: #ccc; }
+  .sazon-anual-fat  { font-size: 0.78rem; color: var(--gray); }
+  .sazon-anual-vals { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+  .sazon-anual-chip { font-size: 0.65rem; background: #222; border-radius: 4px; padding: 2px 6px; color: #aaa; }
+  .sazon-anual-chip.best  { background: rgba(45,158,95,0.15); color: var(--green); }
+  .sazon-anual-chip.worst { background: rgba(204,27,27,0.15);  color: #e07070; }
+
+  /* ── FATURAMENTO ── */
+  .fat-header-row { display: grid; grid-template-columns: 80px repeat(4,1fr); gap: 6px; padding: 8px 14px; background: #1e1e1e; font-size: 0.6rem; letter-spacing: 1px; text-transform: uppercase; color: var(--gray); }
+  .fat-row { display: grid; grid-template-columns: 80px repeat(4,1fr); gap: 6px; padding: 10px 14px; border-top: 1px solid #2e2e2e; align-items: center; }
+  .fat-row.total-row { background: #1e1e1e; }
+  .fat-mes { font-family: 'Bebas Neue', sans-serif; font-size: 0.95rem; letter-spacing: 1px; color: #ccc; }
+  .fat-proj { font-size: 0.78rem; color: var(--gray); }
+  .fat-real-input { background: #1a1a1a; border: 1px solid #383838; border-radius: 6px; color: #fff; font-size: 0.8rem; font-family: 'Bebas Neue', sans-serif; letter-spacing: 1px; padding: 5px 8px; width: 100%; text-align: right; }
+  .fat-real-input:focus { outline: none; border-color: var(--red); }
+  .fat-real-input::placeholder { color: #444; font-size: 0.68rem; font-family: 'DM Sans', sans-serif; letter-spacing: 0; }
+  .fat-var { font-size: 0.78rem; font-weight: 600; text-align: right; }
+  .fat-var.pos { color: var(--green); }
+  .fat-var.neg { color: #e07070; }
+  .fat-var.zero { color: #444; }
+  .fat-bar-wrap { padding: 0 20px; margin-bottom: 8px; }
+  .fat-bar-group { display: flex; gap: 3px; align-items: flex-end; height: 60px; }
+  .fat-bar-proj { background: #3a3a3a; border-radius: 3px 3px 0 0; flex: 1; transition: height 0.3s; }
+  .fat-bar-real { background: var(--green); border-radius: 3px 3px 0 0; flex: 1; transition: height 0.3s; }
+  .fat-kpi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
+
+  /* ── CMV / ESTOQUE ── */
+  .cmv-params { background: var(--card); border-radius: 12px; overflow: hidden; margin-bottom: 8px; }
+  .cmv-param-row { display: flex; align-items: center; justify-content: space-between; padding: 11px 14px; border-top: 1px solid #333; gap: 10px; }
+  .cmv-param-row:first-child { border-top: none; }
+  .cmv-param-label { font-size: 0.82rem; color: #ccc; flex: 1; }
+  .cmv-param-unit { font-size: 0.62rem; color: var(--gray); margin-left: 4px; }
+  .cmv-param-input { background: #1a1a1a; border: 1px solid #444; border-radius: 7px; color: #fff; font-size: 0.88rem; font-family: 'DM Sans', sans-serif; padding: 6px 10px; width: 80px; text-align: right; }
+  .cmv-param-input:focus { outline: none; border-color: var(--red); }
+
+  .cmv-month-card { background: var(--card); border-radius: 12px; overflow: hidden; margin-bottom: 8px; }
+  .cmv-month-head { background: #1e1e1e; padding: 10px 14px; display: flex; justify-content: space-between; align-items: center; }
+  .cmv-month-title { font-family: 'Bebas Neue', sans-serif; font-size: 1rem; letter-spacing: 2px; color: #fff; }
+  .cmv-month-badge { font-size: 0.62rem; padding: 2px 8px; border-radius: 99px; font-weight: 600; }
+  .cmv-month-badge.ok    { background: rgba(45,158,95,0.2);  color: var(--green); }
+  .cmv-month-badge.low   { background: rgba(204,27,27,0.2);  color: #e07070; }
+  .cmv-month-badge.init  { background: rgba(217,119,6,0.2);  color: var(--amber); }
+
+  .cmv-stock-bar { padding: 12px 14px 8px; }
+  .cmv-stock-labels { display: flex; justify-content: space-between; font-size: 0.65rem; color: var(--gray); margin-bottom: 4px; }
+  .cmv-stock-outer { height: 10px; background: #2a2a2a; border-radius: 99px; overflow: hidden; position: relative; }
+  .cmv-stock-inner { height: 100%; border-radius: 99px; transition: width 0.4s ease; }
+  .cmv-stock-marker { position: absolute; top: -2px; height: 14px; width: 2px; background: var(--amber); border-radius: 1px; }
+
+  .cmv-parcelas { padding: 0 14px 12px; }
+  .cmv-parc-title { font-size: 0.58rem; letter-spacing: 2px; text-transform: uppercase; color: var(--gray); margin-bottom: 6px; }
+  .cmv-parc-row { display: flex; gap: 4px; margin-bottom: 4px; align-items: center; }
+  .cmv-parc-chip { font-size: 0.65rem; padding: 3px 8px; border-radius: 5px; font-weight: 500; flex-shrink: 0; }
+  .cmv-parc-chip.p1 { background: rgba(90,159,212,0.2); color: #5a9fd4; }
+  .cmv-parc-chip.p2 { background: rgba(45,158,95,0.2);  color: var(--green); }
+  .cmv-parc-chip.p3 { background: rgba(217,119,6,0.2);  color: var(--amber); }
+  .cmv-parc-label { font-size: 0.68rem; color: #aaa; flex: 1; }
+  .cmv-parc-val { font-size: 0.72rem; color: #fff; font-weight: 600; }
+
+  .cmv-desembolso { background: #1c2a1c; border-radius: 8px; margin: 0 14px 12px; padding: 10px 12px; display: flex; justify-content: space-between; align-items: center; }
+  .cmv-desemb-label { font-size: 0.62rem; letter-spacing: 1px; text-transform: uppercase; color: var(--gray); }
+  .cmv-desemb-val { font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem; color: var(--green); letter-spacing: 1px; }
+
+  .cmv-timeline { padding: 0 20px; margin-bottom: 8px; }
+  .cmv-timeline-row { display: flex; gap: 3px; align-items: center; margin-bottom: 3px; }
+  .cmv-timeline-label { font-size: 0.6rem; color: var(--gray); width: 50px; flex-shrink: 0; }
+  .cmv-timeline-cell { flex: 1; height: 18px; border-radius: 3px; display: flex; align-items: center; justify-content: center; font-size: 0.5rem; font-weight: 600; }
+
+  .fat-accordion { cursor: pointer; user-select: none; }
+  .fat-accordion-head { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; border-top: 1px solid #2e2e2e; }
+  .fat-accordion-head:active { background: #1e1e1e; }
+  .fat-accordion-arrow { font-size: 0.7rem; color: var(--gray); transition: transform 0.2s; }
+  .fat-accordion-arrow.open { transform: rotate(180deg); }
+  .fat-dre-wrap { display: none; background: #111; border-top: 1px solid #2a2a2a; }
+  .fat-dre-wrap.open { display: block; }
+  .fat-dre-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 4px; padding: 7px 14px; border-top: 1px solid #1e1e1e; font-size: 0.72rem; }
+  .fat-dre-row:first-child { border-top: none; }
+  .fat-dre-row.highlight { background: #1c2a1c; }
+  .fat-dre-row.subtotal  { background: #1a1a1a; }
+  .fat-dre-label { color: var(--gray); }
+  .fat-dre-proj  { color: #888; text-align: right; }
+  .fat-dre-real  { text-align: right; font-weight: 600; }
+  .fat-dre-real.pos { color: var(--green); }
+  .fat-dre-real.neg { color: #e07070; }
+  .fat-dre-real.neu { color: #aaa; }
+  .fat-dre-head-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 4px; padding: 6px 14px; background: #1a1a1a; font-size: 0.58rem; letter-spacing: 1px; text-transform: uppercase; color: var(--gray); }
+
+  /* ── CHECKLIST EDIT ── */
+  .add-task-btn { display: flex; align-items: center; justify-content: center; gap: 8px; margin: 0 20px 12px; padding: 12px; background: var(--card); border: 1px dashed #444; border-radius: 10px; color: var(--gray); font-size: 0.78rem; font-family: 'DM Sans',sans-serif; cursor: pointer; transition: all 0.2s; }
+  .add-task-btn:active { background: #222; border-color: var(--red); color: #fff; }
+  .item-delete { background: none; border: none; color: #444; font-size: 0.9rem; cursor: pointer; padding: 2px 6px; border-radius: 4px; margin-left: 4px; transition: color 0.2s; }
+  .item-delete:active { color: #e07070; }
+  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 100; display: flex; align-items: flex-end; }
+  .modal-box { background: #1a1a1a; border-radius: 16px 16px 0 0; width: 100%; padding: 20px; }
+  .modal-title { font-family: 'Bebas Neue',sans-serif; font-size: 1.2rem; letter-spacing: 2px; color: #fff; margin-bottom: 14px; }
+  .modal-input { width: 100%; background: #111; border: 1px solid #333; border-radius: 8px; color: #fff; font-size: 0.88rem; font-family: 'DM Sans',sans-serif; padding: 10px 12px; margin-bottom: 10px; box-sizing: border-box; }
+  .modal-input:focus { outline: none; border-color: var(--red); }
+  .modal-select { width: 100%; background: #111; border: 1px solid #333; border-radius: 8px; color: #fff; font-size: 0.88rem; font-family: 'DM Sans',sans-serif; padding: 10px 12px; margin-bottom: 14px; box-sizing: border-box; }
+  .modal-btns { display: flex; gap: 8px; }
+  .modal-btn { flex: 1; padding: 12px; border-radius: 8px; border: none; font-family: 'DM Sans',sans-serif; font-size: 0.82rem; font-weight: 600; cursor: pointer; }
+  .modal-btn.confirm { background: var(--red); color: #fff; }
+  .modal-btn.cancel  { background: #2a2a2a; color: var(--gray); }
+
+  /* ── DRE CONSOLIDADO ── */
+  .dre-grid { display: grid; grid-template-columns: 110px repeat(3, 1fr); gap: 0; }
+  .dre-grid.wide { grid-template-columns: 110px repeat(12, 1fr); overflow-x: auto; }
+  .dre-col-head { font-size: 0.58rem; letter-spacing: 1px; text-transform: uppercase; color: var(--gray); text-align: right; padding: 8px 6px; background: #1e1e1e; }
+  .dre-col-head:first-child { text-align: left; }
+  .dre-cell { font-size: 0.72rem; text-align: right; padding: 8px 6px; border-top: 1px solid #1e1e1e; color: #aaa; }
+  .dre-cell.label { text-align: left; color: var(--gray); font-size: 0.68rem; }
+  .dre-cell.red   { color: #e07070; }
+  .dre-cell.white { color: #fff; font-weight: 600; }
+  .dre-cell.green { color: var(--green); font-weight: 600; }
+  .dre-cell.amber { color: var(--amber); }
+  .dre-row-total  { background: #1a1a1a; }
+  .dre-row-highlight { background: #1c2a1c; }
+  .dre-toggle { display: flex; gap: 6px; padding: 0 20px; margin-bottom: 8px; }
+  .dre-toggle-btn { flex: 1; padding: 8px; background: var(--card); border: 1px solid #333; border-radius: 8px; color: var(--gray); font-size: 0.7rem; font-family: 'DM Sans',sans-serif; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; text-align: center; transition: all 0.2s; }
+  .dre-toggle-btn.active { background: var(--red); border-color: var(--red); color: #fff; }
+
+  /* ── TAB NAV ── */
+  .tab-nav { display: flex; background: #1A1A1A; border-bottom: 1px solid #2E2E2E; position: sticky; top: 0; z-index: 100; }
+  .tab-btn { flex: 1; padding: 12px 4px; background: transparent; border: none; border-bottom: 3px solid transparent; color: #666; font-family: 'DM Sans', sans-serif; font-size: 0.72rem; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; transition: all 0.2s; }
+  .tab-btn.active { color: #fff; border-bottom-color: var(--red); }
+
+  /* ── FINANCIAL PANEL ── */
+  .fin-section { padding: 0 20px; margin-bottom: 4px; }
+
+  .fin-summary { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 4px; }
+  .fin-kpi { background: var(--card); border-radius: 10px; padding: 12px 14px; border-left: 3px solid var(--red); }
+  .fin-kpi.green { border-left-color: var(--green); }
+  .fin-kpi.amber { border-left-color: var(--amber); }
+  .fin-kpi.blue  { border-left-color: #4a7adb; }
+  .fin-kpi-label { font-size: 0.58rem; letter-spacing: 2px; text-transform: uppercase; color: var(--gray); margin-bottom: 4px; }
+  .fin-kpi-val { font-family: 'Bebas Neue', sans-serif; font-size: 1.3rem; color: #fff; letter-spacing: 1px; }
+  .fin-kpi-val.placeholder { color: #444; font-size: 1rem; }
+
+  .fin-table-wrap { background: var(--card); border-radius: 10px; overflow: hidden; margin-bottom: 8px; }
+  .fin-table-head { background: #222; padding: 10px 14px; display: flex; gap: 8px; align-items: center; }
+  .fin-table-title { font-size: 0.65rem; letter-spacing: 2px; text-transform: uppercase; color: var(--gray); flex: 1; }
+
+  .fin-row { display: flex; align-items: center; gap: 8px; padding: 11px 14px; border-top: 1px solid #333; }
+  .fin-row:first-of-type { border-top: none; }
+  .fin-row-name { flex: 1; font-size: 0.85rem; font-weight: 500; color: #e0e0e0; }
+  .fin-row-contact { font-size: 0.68rem; color: var(--gray); flex: 0 0 auto; max-width: 38%; text-align: right; line-height: 1.3; }
+
+  .fin-status-sel { background: #1e1e1e; border: 1px solid #444; border-radius: 6px; color: #aaa; font-size: 0.62rem; padding: 3px 6px; font-family: 'DM Sans', sans-serif; cursor: pointer; }
+  .fin-status-sel.contracted { background: rgba(45,158,95,0.15); border-color: var(--green); color: var(--green); }
+  .fin-status-sel.negotiating { background: rgba(217,119,6,0.15); border-color: var(--amber); color: var(--amber); }
+  .fin-status-sel.pending { background: rgba(255,255,255,0.04); border-color: #444; color: #666; }
+
+  .fin-val-input { background: #1a1a1a; border: 1px solid #383838; border-radius: 6px; color: #fff; font-size: 0.8rem; font-family: 'Bebas Neue', sans-serif; letter-spacing: 1px; padding: 4px 8px; width: 110px; text-align: right; }
+  .fin-val-input:focus { outline: none; border-color: var(--red); }
+  .fin-val-input::placeholder { color: #444; font-size: 0.7rem; font-family: 'DM Sans', sans-serif; letter-spacing: 0; }
+
+  .fin-cond { font-size: 0.65rem; color: var(--gray); padding: 0 14px 10px; line-height: 1.5; }
+
+  /* CASHFLOW */
+  .cf-bar-wrap { padding: 0 20px; margin-bottom: 8px; }
+  .cf-month { background: var(--card); border-radius: 10px; padding: 12px 14px; margin-bottom: 6px; }
+  .cf-month-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .cf-month-name { font-family: 'Bebas Neue', sans-serif; font-size: 1rem; letter-spacing: 2px; color: #fff; }
+  .cf-month-total { font-family: 'Bebas Neue', sans-serif; font-size: 1rem; letter-spacing: 1px; color: var(--red); }
+  .cf-month-total.zero { color: #444; }
+  .cf-bar-outer { height: 4px; background: #333; border-radius: 99px; overflow: hidden; }
+  .cf-bar-inner { height: 100%; background: var(--red); border-radius: 99px; transition: width 0.5s ease; }
+  .cf-items { margin-top: 8px; display: flex; flex-direction: column; gap: 3px; }
+  .cf-item { font-size: 0.68rem; color: var(--gray); display: flex; justify-content: space-between; }
+  .cf-item-val { color: #aaa; font-weight: 500; }
+  .ctag-forn     { background: rgba(204,27,27,0.10);  color: #c07070; }
+
+  .item-meta { font-size: 0.7rem; color: var(--gray); margin-top: 5px; line-height: 1.5; }
+  .item-meta.risk-text { color: #c07070; }
+
+  .item-actions { display: flex; gap: 6px; margin-top: 10px; }
+  .item-btn {
+    flex: 1; padding: 7px 4px; border-radius: 7px; border: 1.5px solid #3A3A3A;
+    background: transparent; color: #666; font-size: 0.65rem; font-family: 'DM Sans', sans-serif;
+    letter-spacing: 0.5px; cursor: pointer; transition: all 0.2s; text-transform: uppercase; font-weight: 600;
+  }
+  .item-btn:active { transform: scale(0.96); }
+  .item-btn.active-pending  { border-color: #555;         color: #aaa;         background: rgba(255,255,255,0.05); }
+  .item-btn.active-progress { border-color: var(--amber); color: var(--amber); background: rgba(217,119,6,0.12); }
+  .item-btn.active-done     { border-color: var(--green);  color: var(--green);  background: rgba(45,158,95,0.12); }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="eyebrow">Democrata Calçados · Shopping Tivoli</div>
+    <h1>PLANO DE ABERTURA</h1>
+  </div>
+  <div class="inaug-block">
+    <div class="ilabel">⭐ Inauguração</div>
+    <div class="idate">21.07.2026</div>
+    <div class="idays" id="headerDays">—</div>
+  </div>
+</header>
+
+<div class="budget-strip">
+  <div class="bitem">
+    <div class="blabel">Investimento</div>
+    <div class="bval"><span class="bcur">R$</span> <span id="headerInvVal">280.000</span><span class="bcur">,00</span></div>
+  </div>
+  <div class="bitem">
+    <div class="blabel">Capital de Giro</div>
+    <div class="bval"><span class="bcur">R$</span> 120.000<span class="bcur">,00</span></div>
+  </div>
+  <div class="bitem">
+    <div class="blabel">Total</div>
+    <div class="bval"><span class="bcur">R$</span> <span id="headerTotalVal">400.000</span><span class="bcur">,00</span></div>
+  </div>
+</div>
+
+<div class="prog-wrap">
+  <div class="prog-bar-outer">
+    <div class="prog-bar-done" id="progDone" style="width:0%"></div>
+    <div class="prog-bar-prog" id="progProg" style="width:0%"></div>
+  </div>
+  <div class="prog-counts">
+    <div class="prog-chip"><div class="dot dot-g"></div><span id="countDone">0 concluídos</span></div>
+    <div class="prog-chip"><div class="dot dot-a"></div><span id="countProg">0 em andamento</span></div>
+    <div class="prog-chip"><div class="dot dot-x"></div><span id="countPend">— pendentes</span></div>
+  </div>
+</div>
+
+<!-- TAB NAV -->
+<div class="tab-nav">
+  <button class="tab-btn active" onclick="switchTab('checklist')">✅ Checklist</button>
+  <button class="tab-btn" onclick="switchTab('plano')">📊 Plano</button>
+  <button class="tab-btn" onclick="switchTab('fluxo')">💸 Fluxo</button>
+  <button class="tab-btn" onclick="switchTab('cmv')">📦 CMV</button>
+  <button class="tab-btn" onclick="switchTab('dre')">📋 DRE</button>
+  <button class="tab-btn" onclick="switchTab('documentos')">📁 Docs</button>
+</div>
+
+<!-- ===== FINANCIAL PANEL ===== -->
+
+
+<!-- ===== CHECKLIST PANEL ===== -->
+
+
+
+
+<div id="panelChecklist">
+
+<div class="section-label">META FINAL</div>
+<div class="inaug-card">
+  <div>
+    <div class="ic-label">⭐ Inauguração</div>
+    <div class="ic-date">21 JULHO 2026</div>
+  </div>
+  <div class="ic-right">
+    <div class="ic-days-num" id="diasNum">—</div>
+    <div class="ic-days-label">dias restantes</div>
+  </div>
+</div>
+
+<div class="section-label">TODAS AS TAREFAS</div>
+<div style="display:flex;gap:8px;padding:0 20px;margin-bottom:12px">
+  <button class="add-task-btn" style="margin:0;flex:1" onclick="openAddTask()">＋ Nova tarefa</button>
+  <button class="add-task-btn" style="margin:0;flex:0 0 auto;padding:12px 14px;font-size:0.65rem" onclick="restoreAllTasks()" title="Restaurar tarefas excluídas">↺ Restaurar</button>
+</div>
+<div class="list-wrap" id="masterList"></div>
+
+<!-- Modal nova tarefa -->
+<div class="modal-overlay" id="addTaskModal" style="display:none" onclick="if(event.target===this)closeAddTask()">
+  <div class="modal-box">
+    <div class="modal-title">Nova Tarefa</div>
+    <input class="modal-input" id="newTaskTitle" placeholder="Título da tarefa" maxlength="80">
+    <input class="modal-input" id="newTaskMeta" placeholder="Detalhe / observação (opcional)" maxlength="120">
+    <select class="modal-select" id="newTaskCat">
+      <option value="urgente">⚡ Urgente</option>
+      <option value="obra">🏗 Obra</option>
+      <option value="forn">🛒 Fornecedor</option>
+      <option value="preinaug">📅 Pré-inauguração</option>
+      <option value="caderno">📐 Caderno</option>
+      <option value="operacao" selected>🏪 Operação</option>
+    </select>
+    <div class="modal-btns">
+      <button class="modal-btn cancel" onclick="closeAddTask()">Cancelar</button>
+      <button class="modal-btn confirm" onclick="confirmAddTask()">Adicionar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const STATE_KEY = 'democrata_master_v7';
+
+const stateOrder = { progress: 0, pending: 1, done: 2 };
+const tagLabel   = { pending: 'Pendente', progress: 'Em andamento', done: 'Concluído' };
+const catLabel   = {
+  urgente:  '⚡ Urgente',
+  obra:     '🏗 Obra',
+  forn:     '🛒 Fornecedor',
+  preinaug: '📅 Pré-inauguração',
+  caderno:  '📐 Caderno Técnico',
+  operacao: '🏪 Operação',
+};
+const catTagClass = {
+  urgente:  'ctag-urgente',
+  obra:     'ctag-obra',
+  forn:     'ctag-forn',
+  preinaug: 'ctag-preinaug',
+  caderno:  'ctag-caderno',
+  operacao: 'ctag-operacao',
+};
+
+const allItems = [
+  // URGENTE
+  { id: 'u0', cat: 'urgente', title: "Tapumar EUC 259",         meta: "Até 21/Mai · Logo Democrata + data inauguração · Aprovação prévia do Shopping (Cl. 19.1)", risk: false },
+  { id: 'u1', cat: 'urgente', title: "Solicitar documentos",    meta: "Normas Gerais · Regimento Interno · Estatuto Clube de Lojistas (Cl. 1.1)",                 risk: false },
+  { id: 'u2', cat: 'urgente', title: "Abrir PJ (CNPJ)",         meta: "Prazo legal: 04/Ago/2026 · Abrir já para NF e operação (Cl. 24)",                          risk: false },
+  { id: 'u3', cat: 'urgente', title: "Contratar seguro fiança", meta: "Porto Seguro / MAPFRE / Fator / Tokio Marine · Corretor CNAI",                              risk: false },
+  { id: 'u4', cat: 'urgente', title: "Assinar a COF",           meta: "",                                                                                          risk: false },
+  { id: 'u5', cat: 'urgente', title: "Assinar o contrato Tivoli",        meta: "",                                                                                        risk: false },
+  { id: 'u6', cat: 'urgente', title: "Confirmar raio de exclusividade",  meta: "Nenhuma loja da rede dentro de 1km do Tivoli",                                              risk: false },
+  { id: 'u7', cat: 'urgente', title: "Transferir energia CPFL (PJ)",     meta: "UC 4003075661 · Medidor 31261806 · Fazer assim que PJ estiver aberta",                     risk: false },
+
+  // OBRA
+  { id: 's0',  cat: 'obra', title: "As Built",                                meta: "Início: 08.05.2026",                                                                 risk: false },
+  { id: 's1',  cat: 'obra', title: "Selo — solicitar à Leandra",              meta: "Início: 10.05.2026",                                                                 risk: false },
+  { id: 's2',  cat: 'obra', title: "Projeto Arquitetônico",                   meta: "20 dias a partir de 10.05 · com ART/RRT",                                            risk: false },
+  { id: 's3',  cat: 'obra', title: "Envio do Projeto",                        meta: "Após aprovação do projeto",                                                          risk: false },
+  { id: 's4',  cat: 'obra', title: "Negociar Fornecedores",                   meta: "Início: 20.05.2026",                                                                 risk: false },
+  { id: 's5',  cat: 'obra', title: "Contratar Empreiteira",                   meta: "Imediato · obra: 40 dias",                                                           risk: false },
+  { id: 's6',  cat: 'obra', title: "Montagem da Loja",                        meta: "Prazo: 15 dias",                                                                     risk: false },
+  { id: 's7',  cat: 'obra', title: "Recrutamento & Seleção",                  meta: "Equipe para abertura",                                                               risk: false },
+  { id: 's8',  cat: 'obra', title: "Submeter arte do tapume",                 meta: "Aprovação pelo comitê técnico · Diego Dias · (19) 97405-9183",                       risk: false },
+  { id: 's9',  cat: 'obra', title: "Instalar tapume na loja",                 meta: "Após aprovação da arte",                                                             risk: false },
+  { id: 's10', cat: 'obra', title: "Contratar seguro de obra",                meta: "Todas as coberturas mínimas exigidas · Apresentar apólice + boleto pago",            risk: false },
+  { id: 's11', cat: 'obra', title: "Apresentar ART/RRT de execução",          meta: "Antes de iniciar as obras",                                                          risk: false },
+  { id: 's12', cat: 'obra', title: "Projeto de detecção com ART/RRT",         meta: "Antes da intervenção de detecção",                                                   risk: false },
+  { id: 's13', cat: 'obra', title: "Projeto combate a incêndio com ART/RRT",  meta: "Antes da intervenção",                                                               risk: false },
+  { id: 's14', cat: 'obra', title: "Projeto elétrico e telemático com ART/RRT",meta: "Antes da intervenção",                                                              risk: false },
+  { id: 's15', cat: 'obra', title: "Projeto ar-condicionado com ART/RRT",     meta: "Contratar manutenção se reaproveitar split existente",                               risk: false },
+  { id: 's16', cat: 'obra', title: "Projeto estrutura metálica com ART/RRT",  meta: "Antes da intervenção",                                                               risk: false },
+  { id: 's17', cat: 'obra', title: "Solicitar autorização SAL",                meta: "Para cada intervenção pelo sistema do shopping",                                     risk: false },
+  { id: 's18', cat: 'obra', title: "Verificar itens fora de norma",            meta: "Escada caracol · quadro elétrico · detectores",                                     risk: false },
+  { id: 's19', cat: 'obra', title: "Garantir equipe noturna",                  meta: "Obras 22h–7h · materiais 22h–6h",                                                   risk: false },
+  { id: 's20', cat: 'obra', title: "Instalar lona no mall e proteção de piso", meta: "Para materiais que causam sujidade",                                                risk: false },
+  { id: 's21', cat: 'obra', title: "Agendar bombeiro civil p/ solda",          meta: "Obrigatório para serviços com solda",                                                risk: false },
+  { id: 's22', cat: 'obra', title: "Entregar 25 itens do checklist de obras",  meta: "Ao shopping antes da vistoria final · Diego Dias",                                  risk: false },
+  { id: 's23', cat: 'obra', title: "Agendar vistoria final",                   meta: "Com Diego Dias · (19) 97405-9183",                                                   risk: false },
+  { id: 's24', cat: 'obra', title: "Inaugurar até 06/07/2026",                 meta: "Prazo máximo para preservar a carência total",                                      risk: true  },
+
+  // FORNECEDORES
+  { id: 'f0',  cat: 'forn', title: "Mobília",       meta: "Luciano · 16 98191-3800 · 3 parcelas",                              risk: false },
+  { id: 'f1',  cat: 'forn', title: "Prateleiras",   meta: "Telamarck · 16 98191-3800 · 2 parcelas · 1ª na assinatura",        risk: false },
+  { id: 'f2',  cat: 'forn', title: "Execução",      meta: "Paulo · 19 99774-8000 · 3 parcelas · 1ª em 27/mai",                risk: false },
+  { id: 'f3',  cat: 'forn', title: "Couro",         meta: "Fernanda · 16 98832-9230 · 1 parcela · 15 dias após faturamento",  risk: false },
+  { id: 'f4',  cat: 'forn', title: "Paredes",       meta: "Luciana · 16 99146-9901 · 3 parcelas no cartão ou PIX c/ 10%",     risk: false },
+  { id: 'f5',  cat: 'forn', title: "Sideral",       meta: "Giuliano · 16 99159-5511 · 1 parcela · 30 dias ou à vista c/ desc.",risk: false },
+  { id: 'f6',  cat: 'forn', title: "Frandias",      meta: "Fransergio · 16 98833-7563 · 2 parcelas · 1ª na assinatura",       risk: false },
+  { id: 'f7',  cat: 'forn', title: "Luminotécnico", meta: "Soninha · 16 99165-1002 · 3 parcelas",                             risk: false },
+  { id: 'f8',  cat: 'forn', title: "Tapete",        meta: "Rose · 11 98432-8682 · A negociar",                              risk: false },
+  { id: 'f9',  cat: 'forn', title: "Portobello",    meta: "Marina · 16 99211-0209 · Boleto 28 dias após faturamento",         risk: false },
+  { id: 'f10', cat: 'forn', title: "Frete",         meta: "M Sul Transportes · Boleto 21 dias após coleta",                   risk: false },
+
+  // CONTRATO
+
+  // PRÉ-INAUGURAÇÃO
+  { id: 'p0', cat: 'preinaug', title: "Apresentar PJ ao Shopping",          meta: "Vinicius titular ≥51% · Aprovação cadastral + instrumento de transferência (Cl. 24)", risk: false },
+  { id: 'p1', cat: 'preinaug', title: "Obter alvará (PJ)",                  meta: "Ausência não isenta das obrigações contratuais (Cl. 4.2)",                            risk: false },
+  { id: 'p2', cat: 'preinaug', title: "Aderir ao Clube de Lojistas",        meta: "Condição essencial · Inadimplência gera rescisão (Cl. 6.4)",                          risk: false },
+  { id: 'p3', cat: 'preinaug', title: "Sistema faturamento diário",         meta: "Envio até 17h do dia seguinte · Login pelo Shopping (Cl. 5.4)",                       risk: false },
+  { id: 'p4', cat: 'preinaug', title: "Plataforma digital do Shopping",     meta: "Integrar em até 48h da abertura (Cl. 4.5)",                                           risk: false },
+  { id: 'p5', cat: 'preinaug', title: "Contratar seguro de mercadorias",    meta: "Benfeitorias e lucros cessantes · operação",                                           risk: false },
+  { id: 'p6', cat: 'preinaug', title: "Planejar uso da mídia inaugural",    meta: "R$ 15.000 disponíveis · utilizar em até 90 dias após abertura",                       risk: false },
+  { id: 'p7', cat: 'preinaug', title: "Compatibilizar PDV com o shopping",  meta: "Confirmar com a Democrata padrões técnicos exigidos",                                 risk: false },
+
+  // VENCIMENTOS
+
+  // RISCOS
+
+  // CADERNO TÉCNICO — PROJETOS
+  { id: 'ct0',  cat: 'caderno', title: "Apresentar projetos ao Comitê Técnico",     meta: "DWG + PDF por e-mail: arquitetura, estrutural, elétrico, AC/exaustão, hidro-sanitário, incêndio, ART de cada disciplina", risk: false },
+  { id: 'ct1',  cat: 'caderno', title: "Aguardar aprovação (7 dias úteis)",         meta: "Comitê tem 7 dias úteis para analisar · Lojista tem 15 dias para atender exigências",                risk: false },
+  { id: 'ct2',  cat: 'caderno', title: "Entregar projetos aprovados em 3 vias",     meta: "Cópias dobradas em A4 + arquivo DWG em CD identificado após aprovação",                             risk: false },
+  { id: 'ct3',  cat: 'caderno', title: "Confirmar medidas in loco (Modelo B)",      meta: "Vistoriar a loja com o Comitê e assinar Termo de Recebimento antes de iniciar projetos",           risk: false },
+  { id: 'ct4',  cat: 'caderno', title: "Confirmar espaço aéreo da LUC",             meta: "Verificar dutos, prumadas e passagens existentes antes de projetar forro e instalações",           risk: false },
+
+  // CADERNO TÉCNICO — OBRA / ACESSO
+  { id: 'ct5',  cat: 'caderno', title: "Integração dos funcionários",               meta: "Todo operário precisa fazer integração com o Comitê antes de entrar na obra · agendar com Diego Dias", risk: false },
+  { id: 'ct6',  cat: 'caderno', title: "Crachás para toda a equipe de obra",        meta: "Emitidos após integração · uso obrigatório e visível durante toda a obra",                         risk: false },
+  { id: 'ct7',  cat: 'caderno', title: "Designar responsável técnico por escrito",  meta: "Informar nome e telefone do preposto ao Comitê Técnico antes do início das obras",                 risk: false },
+  { id: 'ct8',  cat: 'caderno', title: "Tapume branco padrão (avanço 0,65m)",       meta: "Fixado laterais e topo · sem fixação no piso do mall · proteção entre tapume e piso obrigatória", risk: false },
+  { id: 'ct9',  cat: 'caderno', title: "Solicitar medidor de energia à CPFL",       meta: "Fazer pedido formal 10 dias antes da inauguração · necessário relação de carga e dados cadastrais", risk: true  },
+  { id: 'ct10', cat: 'caderno', title: "Extintores CO₂ durante a obra",             meta: "1 extintor CO₂ 6kg a cada 35m² durante toda a execução das instalações",                          risk: false },
+  { id: 'ct11', cat: 'caderno', title: "Caçamba de entulho em local aprovado",      meta: "Entulho seco em caçamba · local determinado pelo Comitê · responsabilidade do lojista",            risk: false },
+  { id: 'ct12', cat: 'caderno', title: "Horário de obras: seg–sáb 7h–22h",         meta: "Serviços com barulho excessivo somente 22h–7h · horas extras com autorização escrita 24h antes",   risk: false },
+  { id: 'ct13', cat: 'caderno', title: "Solicitar vistoria final 5 dias antes",     meta: "Carta Modelo C ao Comitê · 5 dias antes do término · laudo libera inauguração",                   risk: true  },
+
+  // CADERNO TÉCNICO — TÉCNICO / ELÉTRICO
+  { id: 'ct14', cat: 'caderno', title: "Instalar iluminação de emergência LED",     meta: "2–3 luminárias autônomas · 2h autonomia · sobre caixa, saída para mall e QD elétrico",            risk: false },
+  { id: 'ct15', cat: 'caderno', title: "Quadro elétrico no térreo com DR",         meta: "Chapa de aço, disjuntor DR, barramento cobre 99,9%, contra-tampa acrílico · térreo de fácil acesso", risk: false },
+  { id: 'ct16', cat: 'caderno', title: "Somente lâmpadas LED",                     meta: "Halogêneas e incandescentes proibidas · luminárias de madeira/plástico/tecido proibidas",          risk: false },
+  { id: 'ct17', cat: 'caderno', title: "Eletrodutos metálicos obrigatórios",        meta: "Ferro esmaltado ou galvanizado · sem fiação aparente fora de eletroduto",                          risk: false },
+  { id: 'ct18', cat: 'caderno', title: "Prever 2 contatores no QD (automação)",     meta: "Sistema ASP do shopping controla letreiro (A) e ventilador externo AC (B) · deixar previsão",    risk: false },
+
+  // CADERNO TÉCNICO — FACHADA / VITRINE
+  { id: 'ct19', cat: 'caderno', title: "Vidros temperados 10mm (porta e vitrine)",  meta: "Porta: altura mín. 2,20m, largura mín. 1,00m · vidro jumbo rodapé–rodateto (~3,55m) · perfil alumínio lateral", risk: false },
+  { id: 'ct20', cat: 'caderno', title: "Letreiro LED com estrutura independente",   meta: "Altura entre 3,00m–4,00m · pode avançar 0,15m para o mall · sem apoio no rodateto · Timer obrigatório", risk: false },
+  { id: 'ct21', cat: 'caderno', title: "Somente nome constante no contrato",        meta: "Denominação da fachada deve ser exatamente a que consta no contrato de locação",                  risk: false },
+
+  // CONTATOS
+
+  // OPERAÇÃO — DO WELCOME KIT
+  { id: 'op0', cat: 'operacao', title: "Acessar Portal do Lojista",           meta: "Proprietário + gerente + resp. declaração de vendas devem ter acesso · https://ad.madnezz.com.br/auth/login", risk: false },
+  { id: 'op1', cat: 'operacao', title: "Declarar vendas diariamente",         meta: "Pelo portal · até 17h · advertência e multa em caso de atraso",          risk: true  },
+  { id: 'op2', cat: 'operacao', title: "Baixar documentos do portal",         meta: "AVCB · Normas Gerais · Regimento Interno · Laudos · Caderno Técnico · Valores mínimos de seguro", risk: false },
+  { id: 'op3', cat: 'operacao', title: "Cadastrar fornecedores no portal",    meta: "Solicitar acesso para fornecedores e prestadores pelo portal antes de qualquer entrega", risk: false },
+  { id: 'op4', cat: 'operacao', title: "Orientar fornecedores — carga/descarga", meta: "Entregas 06h–23h59 · Carrinhos 4 rodas: 06h–09h55 e após 22h30 · Carrinhos 2 rodas: 06h–12h, 14h–17h, após 22h30", risk: false },
+  { id: 'op5', cat: 'operacao', title: "Planejar inauguração com Marketing",  meta: "Contato Paula: paula@tivolishopping.com.br · Coquetéis, mídias sociais, aprovação de adesivos", risk: false },
+  { id: 'op6', cat: 'operacao', title: "Enviar arte vitrine/fachada pelo portal", meta: "Aprovação pelo Comitê antes de instalar qualquer adesivo ou arte na fachada",        risk: false },
+];
+
+let state = JSON.parse(localStorage.getItem(STATE_KEY) || '{}');
+allItems.forEach(i => { if (!state[i.id]) state[i.id] = 'pending'; });
+
+function save() { localStorage.setItem(STATE_KEY, JSON.stringify(state)); }
+
+function setItem(id, st) {
+  event.stopPropagation();
+  state[id] = st;
+  save();
+  render();
+}
+
+function render() {
+  const sorted = [...allItems].sort((a, b) => stateOrder[state[a.id]] - stateOrder[state[b.id]]);
+  const wrap = document.getElementById('masterList');
+  wrap.innerHTML = '';
+
+  sorted.forEach(item => {
+    const st = state[item.id];
+    wrap.innerHTML += `
+      <div class="item-card cat-${item.cat} state-${st} ${item.risk ? 'risk-highlight' : ''}">
+        <div class="item-top">
+          <div class="item-title ${st === 'done' ? 'done-text' : ''}">${item.title}</div>
+          <div class="item-right">
+            <span class="status-tag tag-${st}">${tagLabel[st]}</span>
+            <span class="cat-tag ${catTagClass[item.cat]}">${catLabel[item.cat]}</span>
+            <button class="item-delete" onclick="deleteTask('${item.id}')" title="Excluir">🗑</button>
+          </div>
+        </div>
+        <div class="item-meta ${item.risk ? 'risk-text' : ''}">${item.meta}</div>
+        <div class="item-actions">
+          <button class="item-btn ${st==='pending'?'active-pending':''}"   onclick="setItem('${item.id}','pending')">⚪ Pendente</button>
+          <button class="item-btn ${st==='progress'?'active-progress':''}" onclick="setItem('${item.id}','progress')">🟡 Andamento</button>
+          <button class="item-btn ${st==='done'?'active-done':''}"         onclick="setItem('${item.id}','done')">✅ Concluído</button>
+        </div>
+      </div>`;
+  });
+
+  // progress bar
+  const total    = allItems.length;
+  const done     = allItems.filter(i => state[i.id] === 'done').length;
+  const progress = allItems.filter(i => state[i.id] === 'progress').length;
+  const pending  = total - done - progress;
+  document.getElementById('progDone').style.width = (done / total * 100) + '%';
+  document.getElementById('progProg').style.width = (progress / total * 100) + '%';
+  document.getElementById('countDone').textContent = done + ' concluído' + (done !== 1 ? 's' : '');
+  document.getElementById('countProg').textContent = progress + ' em andamento';
+  document.getElementById('countPend').textContent = pending + ' pendente' + (pending !== 1 ? 's' : '');
+}
+
+// ── CHECKLIST EDIT ─────────────────────────────
+const CUSTOM_KEY  = 'democrata_custom_v8';
+const DELETED_KEY = 'democrata_deleted_v8';
+
+// Carrega exclusões e remove da lista
+let deletedIds = [];
+try { deletedIds = JSON.parse(localStorage.getItem(DELETED_KEY) || '[]'); } catch(e) {}
+deletedIds.forEach(id => {
+  const idx = allItems.findIndex(i => i.id === id);
+  if (idx >= 0) allItems.splice(idx, 1);
+});
+
+// Carrega tarefas customizadas
+try {
+  const savedCustom = JSON.parse(localStorage.getItem(CUSTOM_KEY) || '[]');
+  savedCustom.forEach(item => {
+    if (!allItems.find(i => i.id === item.id)) {
+      allItems.push(item);
+      if (!state[item.id]) state[item.id] = 'pending';
+    }
+  });
+} catch(e) {}
+
+function saveCustom() {
+  try {
+    localStorage.setItem(CUSTOM_KEY, JSON.stringify(allItems.filter(i => i.custom)));
+    localStorage.setItem(DELETED_KEY, JSON.stringify(deletedIds));
+  } catch(e) {}
+}
+
+function openAddTask() {
+  document.getElementById('addTaskModal').style.display = 'flex';
+  setTimeout(() => document.getElementById('newTaskTitle').focus(), 100);
+}
+function closeAddTask() {
+  document.getElementById('addTaskModal').style.display = 'none';
+  document.getElementById('newTaskTitle').value = '';
+  document.getElementById('newTaskMeta').value = '';
+}
+function confirmAddTask() {
+  const title = document.getElementById('newTaskTitle').value.trim();
+  if (!title) { document.getElementById('newTaskTitle').focus(); return; }
+  const meta  = document.getElementById('newTaskMeta').value.trim();
+  const cat   = document.getElementById('newTaskCat').value;
+  const id    = 'custom_' + Date.now();
+  allItems.push({ id, cat, title, meta, risk: false, custom: true });
+  state[id] = 'pending';
+  save();
+  saveCustom();
+  closeAddTask();
+  render();
+}
+function deleteTask(id) {
+  const idx = allItems.findIndex(i => i.id === id);
+  if (idx >= 0) {
+    if (!allItems[idx].custom) deletedIds.push(id);
+    allItems.splice(idx, 1);
+    delete state[id];
+    save();
+    saveCustom();
+    render();
+  }
+}
+
+function restoreAllTasks() {
+  if (!confirm('Restaurar todas as tarefas originais excluídas?')) return;
+  deletedIds = [];
+  saveCustom();
+  location.reload();
+}
+
+// ── DIAS RESTANTES ─────────────────────────────
+const inaug = new Date('2026-07-21');
+const diff  = Math.ceil((inaug - new Date()) / 86400000);
+document.getElementById('diasNum').textContent    = diff > 0 ? diff : 'Vencido';
+document.getElementById('headerDays').textContent = diff > 0 ? diff + ' dias' : 'Vencido';
+
+render();
+setTimeout(calcSim, 50);
+
+// ── TAB SWITCHING ──────────────────────────────
+function switchTab(tab) {
+  ['checklist','plano','fluxo','cmv','dre','documentos'].forEach(t => {
+    const el = document.getElementById('panel' + t.charAt(0).toUpperCase() + t.slice(1));
+    if (el) el.style.display = tab === t ? '' : 'none';
+  });
+  document.querySelectorAll('.tab-btn').forEach((b,i) => {
+    b.classList.toggle('active', ['checklist','plano','fluxo','cmv','dre','documentos'][i] === tab);
+  });
+  if (tab === 'plano')       { calcSim(); calcSazon(); renderFinanceiro(); }
+  if (tab === 'fluxo')       { renderFluxo(); }
+  if (tab === 'cmv')         { renderCMV(); }
+  if (tab === 'dre')         { renderFaturamento(); renderDRE(); }
+}
+
+// ── FINANCIAL DATA ─────────────────────────────
+const FIN_KEY = 'democrata_fin_v7';
+
+const fornData = [
+  { id:'fn0',  name:'Mobília',         contact:'Luciano · 16 98191-3800',    cond:'3 parcelas',                           parcelas:3, mesInicio:'mai' },
+  { id:'fn1',  name:'Prateleiras',     contact:'Telamarck · 16 98191-3800',  cond:'2 parcelas · 1ª na assinatura',        parcelas:2, mesInicio:'mai' },
+  { id:'fn2',  name:'Execução (obra)', contact:'Paulo · 19 99774-8000',      cond:'3 parcelas · 1ª em 27/mai',            parcelas:3, mesInicio:'mai' },
+  { id:'fn3',  name:'Couro',           contact:'Fernanda · 16 98832-9230',   cond:'1 parcela · 15d após faturamento',     parcelas:1, mesInicio:'jun' },
+  { id:'fn4',  name:'Paredes',         contact:'Luciana · 16 99146-9901',    cond:'3x cartão ou PIX c/ 10% desc',         parcelas:3, mesInicio:'mai' },
+  { id:'fn5',  name:'Sideral',         contact:'Giuliano · 16 99159-5511',   cond:'1x · 30d ou à vista c/ desc',          parcelas:1, mesInicio:'jun' },
+  { id:'fn6',  name:'Frandias',        contact:'Fransergio · 16 98833-7563', cond:'2 parcelas · 1ª na assinatura',        parcelas:2, mesInicio:'mai' },
+  { id:'fn7',  name:'Luminotécnico',   contact:'Soninha · 16 99165-1002',    cond:'3 parcelas',                           parcelas:3, mesInicio:'mai' },
+  { id:'fn8',  name:'Tapete',          contact:'Rose · 11 98432-8682',       cond:'A negociar',                           parcelas:1, mesInicio:'jun' },
+  { id:'fn9',  name:'Portobello',      contact:'Marina · 16 99211-0209',     cond:'Boleto 28d após faturamento',          parcelas:1, mesInicio:'jun' },
+  { id:'fn10', name:'Frete',                contact:'M Sul Transportes',          cond:'Boleto 21d após coleta · 25/05/2026',  parcelas:1, mesInicio:'mai' },
+  { id:'fn11', name:'Taxa de Franquia',     contact:'Democrata',                   cond:'Parcela única',                        parcelas:1, mesInicio:'mai' },
+  { id:'fn12', name:'Marketing Inaugural',  contact:'Tivoli Shopping',             cond:'10x no boleto · a partir Jul/26',      parcelas:10, mesInicio:'jul' },
+];
+
+const fixedMonthly = [
+  { name:'Aluguel Mínimo',       val:6365.80, from:'ago' },
+  { name:'Encargos + Fundo',     val:1200,    from:'ago' },
+  { name:'Mídia inaugural',      val:1500,    from:'ago', count:10 },
+  { name:'Seguro fiança (est.)', val:800,     from:'ago' },
+];
+
+const months     = ['mai','jun','jul','ago','set','out','nov','dez'];
+const monthsFull = { mai:'Maio/26', jun:'Jun/26', jul:'Jul/26', ago:'Ago/26', set:'Set/26', out:'Out/26', nov:'Nov/26', dez:'Dez/26' };
+
+let finState = {};
+try { finState = JSON.parse(localStorage.getItem(FIN_KEY) || '{}'); } catch(e) {}
+fornData.forEach(f => { if (!finState[f.id]) finState[f.id] = { val:'', status:'pending' }; });
+
+function saveFin() { try { localStorage.setItem(FIN_KEY, JSON.stringify(finState)); } catch(e){} }
+
+function fmtBRL(n) {
+  if (n === null || n === undefined || n === '') return '—';
+  return 'R$ ' + Number(n).toLocaleString('pt-BR', { minimumFractionDigits:0, maximumFractionDigits:0 });
+}
+
+function parseBRL(s) {
+  if (!s) return null;
+  const n = parseFloat(String(s).replace(/[^0-9,]/g,'').replace(',','.'));
+  return isNaN(n) ? null : n;
+}
+
+function getVal(f) {
+  if (f.fixedVal !== undefined) return f.fixedVal;
+  return parseBRL(finState[f.id] && finState[f.id].val) || 0;
+}
+
+function updateKPIs() {
+  let total = 0, contracted = 0, eligible = 0;
+  fornData.forEach(f => {
+    total += getVal(f);
+    if (f.fixedVal !== 0) {
+      eligible++;
+      if (finState[f.id] && finState[f.id].status === 'contracted') contracted++;
+    }
+  });
+  const kpiObra = document.getElementById('kpiObra');
+  const kpiTotal = document.getElementById('kpiTotal');
+  const kpiContr = document.getElementById('kpiContratados');
+  if (kpiObra)  kpiObra.textContent  = total > 0 ? fmtBRL(total) : 'R$ —';
+  if (kpiTotal) kpiTotal.textContent = total > 0 ? fmtBRL(total + 120000) : 'R$ —';
+  if (kpiContr) kpiContr.textContent = contracted + ' / ' + eligible;
+  const invInline = document.getElementById('invTotalInline');
+  if (invInline) invInline.textContent = total > 0 ? fmtBRL(total) : 'R$ —';
+  // Atualiza header
+  const headerInv   = document.getElementById('headerInvVal');
+  const headerTotal = document.getElementById('headerTotalVal');
+  if (headerInv)   headerInv.textContent   = total > 0 ? Number(total).toLocaleString('pt-BR', {maximumFractionDigits:0}) : '—';
+  if (headerTotal) headerTotal.textContent = total > 0 ? Number(total + 120000).toLocaleString('pt-BR', {maximumFractionDigits:0}) : '—';
+  // Sincroniza input s_inv com o Total (fornecedores + capital de giro)
+  const sInv = document.getElementById('s_inv');
+  if (sInv && total > 0) {
+    sInv.value = ((total + 120000) / 1000).toFixed(0);
+    calcSim();
+  }
+}
+
+function buildCashflow() {
+  const cf = {};
+  months.forEach(m => cf[m] = []);
+
+  // Lê inputs do simulador — compatível Safari iOS
+  function gi(id, def) { const e = document.getElementById(id); return e ? (parseFloat(e.value) || def) : def; }
+  const venda0    = gi('s_venda',   120);
+  const cresc     = gi('s_cresc',   10);
+  const descPct   = gi('s_desc',    5);
+  const impPct    = gi('s_imp',     8);
+  const dpPct     = gi('s_dp',      14);
+  const alugMin   = gi('s_aluguel', 6366);
+  const alPct     = gi('s_al_pct',  6);
+  const condMes   = gi('s_cond',    1200);
+  const locMes    = gi('s_locacao', 0);
+  const cartaoPct = gi('s_cartao',  2.5);
+  const mktPct    = gi('s_mkt',     2);
+  const odPct     = gi('s_od',      8);
+
+  const fatAnual  = venda0 * 1000 * 12;
+
+  // Sazonalidade
+  const sazonPcts = months.map((m, i) => {
+    const mesIdx = ['mai','jun','jul','ago','set','out','nov','dez'].indexOf(m);
+    // maio=4, jun=5... mapear para índice do ano (0=jan)
+    const anoIdx = mesIdx + 4; // mai=4
+    return (sazonState && sazonState[anoIdx] !== undefined) ? parseFloat(sazonState[anoIdx]) || 0 : fatAnual/12/fatAnual*100;
+  });
+  // Normalizar para que a soma dos 8 meses seja proporcional ao ano
+  const somaOito = sazonPcts.reduce((s,v) => s+v, 0);
+
+  // TAG INVESTIMENTO (fornecedores — parcelas)
+  fornData.forEach(f => {
+    if (f.fixedVal === 0) return;
+    const raw = getVal(f);
+    if (!raw) return;
+    const parc = f.parcelas || 1;
+    const parcVal = raw / parc;
+    const mIdx = months.indexOf(f.mesInicio);
+    if (mIdx < 0) return;
+    for (let i = 0; i < parc; i++) {
+      const idx = mIdx + i;
+      if (idx < months.length) cf[months[idx]].push({ name: f.name, val: parcVal, tag: 'investimento' });
+    }
+  });
+
+  // TAG CMV — estoque inicial (CMV Jul × 3) + reposição mensal, parcelas 30/60/90d
+  const cmvPct  = parseFloat((document.getElementById('s_cmv')   || {}).value) || 42.86;
+  const giro    = parseFloat((document.getElementById('cmvGiro') || {}).value) || 3;
+  const p1dias  = parseFloat((document.getElementById('cmvP1')   || {}).value) || 30;
+  const p2dias  = parseFloat((document.getElementById('cmvP2')   || {}).value) || 60;
+  const p3dias  = parseFloat((document.getElementById('cmvP3')   || {}).value) || 90;
+  const p4dias  = parseFloat((document.getElementById('cmvP4')   || {}).value) || 120;
+  const offsets3 = [Math.round(p1dias/30), Math.round(p2dias/30), Math.round(p3dias/30)];
+  const offsets4 = [Math.round(p1dias/30), Math.round(p2dias/30), Math.round(p3dias/30), Math.round(p4dias/30)];
+  const fatAnualTotal = venda0 * 1000 * 12;
+
+  months.forEach((m, mi) => {
+    if (['mai','jun'].includes(m)) return;
+
+    const anoIdx = mi + 4;
+    const fatMes = fatAnualTotal * ((sazonState && sazonState[anoIdx] ? sazonState[anoIdx] : 0) / 100);
+    const cmvMes = fatMes * (1 - descPct/100) * (cmvPct/100);
+    if (cmvMes <= 0) return;
+
+    const isEstoqueInicial = m === 'jul';
+    const compraProj = isEstoqueInicial ? cmvMes * giro : cmvMes;
+    const compraReal = (cmvReal && cmvReal[mi - 2] !== undefined && cmvReal[mi - 2] !== null)
+      ? cmvReal[mi - 2] : null;
+    const compra   = compraReal !== null ? compraReal : compraProj;
+    const offsets  = isEstoqueInicial ? offsets4 : offsets3;
+    const nParc    = offsets.length;
+    const parcVal  = compra / nParc;
+    const label    = isEstoqueInicial ? 'Estoque inicial' : `Reposição ${monthsFull[m]}`;
+
+    offsets.forEach((off, pi) => {
+      const targetIdx = mi + off;
+      if (targetIdx < months.length) {
+        cf[months[targetIdx]].push({
+          name: `${label} · ${pi+1}/${nParc}`,
+          val:  parcVal,
+          tag:  'cmv'
+        });
+      }
+    });
+  });
+  months.forEach((m, mi) => {
+    const fatMes   = fatAnual * (sazonPcts[mi] / somaOito) * (somaOito / 100);
+    const fatMesAlt = fatAnual / 12; // fallback uniforme
+    const fat      = sazonPcts[mi] > 0 ? fatAnual * sazonPcts[mi] / 100 : fatMesAlt;
+    const alugEfetivo = Math.max(alugMin, fat * alPct / 100);
+    const ctoMes   = alugEfetivo + condMes + locMes;
+    if (months.indexOf(m) >= months.indexOf('ago')) {
+      cf[m].push({ name: 'Aluguel/CTO', val: ctoMes, tag: 'fixo' });
+    }
+  });
+
+  // TAG CUSTO VARIÁVEL (imposto, pessoal, cartão, marketing, outras desp — variam com fat)
+  months.forEach((m, mi) => {
+    const fat  = fatAnual * sazonPcts[mi] / 100;
+    if (fat <= 0) return;
+    const rob  = fat * (1 - descPct/100);
+    if (months.indexOf(m) >= months.indexOf('ago')) {
+      cf[m].push({ name: 'Imposto',     val: rob  * (impPct/100),    tag: 'variavel' });
+      cf[m].push({ name: 'Pessoal',     val: rob  * (dpPct/100),     tag: 'variavel' });
+      cf[m].push({ name: 'Tx. Cartão',  val: fat  * (cartaoPct/100), tag: 'variavel' });
+      cf[m].push({ name: 'Marketing',   val: fat  * (mktPct/100),    tag: 'variavel' });
+      cf[m].push({ name: 'Outras Desp.',val: rob  * (odPct/100),     tag: 'variavel' });
+    }
+  });
+
+  const totals   = months.map(m => cf[m].reduce((s,i) => s+i.val, 0));
+  const maxTotal = Math.max(...totals, 1);
+
+  const tagCfg = {
+    investimento: { label: 'Investimento', color: '#c07070', bg: 'rgba(204,27,27,0.15)' },
+    fixo:         { label: 'Custo Fixo',   color: '#d4a843', bg: 'rgba(217,119,6,0.15)' },
+    variavel:     { label: 'Custo Var.',   color: '#5a9fd4', bg: 'rgba(74,122,219,0.15)' },
+    cmv:          { label: 'CMV/Estoque',  color: '#7ecfa0', bg: 'rgba(45,158,95,0.15)'  },
+  };
+
+  const wrap = document.getElementById('cashflow');
+  if (!wrap) return;
+  wrap.innerHTML = '';
+  months.forEach((m, mi) => {
+    const items = cf[m];
+    const total = totals[mi];
+    const barPct = Math.round((total / maxTotal) * 100);
+    wrap.innerHTML += `
+      <div class="cf-month">
+        <div class="cf-month-top">
+          <div class="cf-month-name">${monthsFull[m]}</div>
+          <div class="cf-month-total ${total===0?'zero':''}">${total>0 ? fmtBRL(total) : '—'}</div>
+        </div>
+        <div class="cf-bar-outer"><div class="cf-bar-inner" style="width:${barPct}%"></div></div>
+        ${items.length > 0 ? '<div class="cf-items">' + items.map(it => {
+          const t = tagCfg[it.tag] || tagCfg.investimento;
+          return `<div class="cf-item">
+            <span style="display:flex;align-items:center;gap:5px">
+              <span style="font-size:0.55rem;padding:1px 5px;border-radius:3px;background:${t.bg};color:${t.color};font-weight:600;letter-spacing:0.5px">${t.label}</span>
+              <span>${it.name}</span>
+            </span>
+            <span class="cf-item-val">${fmtBRL(it.val)}</span>
+          </div>`;
+        }).join('') + '</div>' : ''}
+      </div>`;
+  });
+}
+
+function renderFinanceiro() {
+  const table = document.getElementById('fornTable');
+  if (!table) return;
+  table.innerHTML = '<div class="fin-table-head"><span class="fin-table-title">Fornecedor · Valor Total · Status</span></div>';
+
+  fornData.forEach(f => {
+    const fs = finState[f.id] || { val:'', status:'pending' };
+    const isFixed  = f.fixedVal !== undefined;
+    const isFree   = isFixed && f.fixedVal === 0;
+    const sClass   = fs.status === 'contracted' ? 'contracted' : fs.status === 'negotiating' ? 'negotiating' : 'pending';
+
+    const valCell = isFree
+      ? '<span style="font-size:0.7rem;color:var(--green);font-weight:600;flex-shrink:0">Bonificado</span>'
+      : isFixed
+        ? `<span style="font-family:\'Bebas Neue\',sans-serif;font-size:1rem;color:#fff;letter-spacing:1px;flex-shrink:0">${fmtBRL(f.fixedVal)}</span>`
+        : `<input class="fin-val-input" id="val_${f.id}" placeholder="R$ valor" value="${fs.val}" oninput="updateVal('${f.id}',this.value)">`;
+
+    table.innerHTML += `
+      <div class="fin-row">
+        <div style="flex:1;min-width:0">
+          <div class="fin-row-name">${f.name}</div>
+          <div style="font-size:0.65rem;color:var(--gray);margin-top:2px">${f.cond}</div>
+        </div>
+        ${valCell}
+        <select class="fin-status-sel ${sClass}" id="sel_${f.id}" onchange="updateStatus('${f.id}',this.value)">
+          <option value="pending"     ${fs.status==='pending'    ?'selected':''}>○ Pendente</option>
+          <option value="negotiating" ${fs.status==='negotiating'?'selected':''}>⟳ Negociando</option>
+          <option value="contracted"  ${fs.status==='contracted' ?'selected':''}>✓ Contratado</option>
+        </select>
+      </div>`;
+  });
+
+  updateKPIs();
+  buildCashflow();
+}
+
+function updateVal(id, raw) {
+  finState[id].val = raw;
+  saveFin();
+  updateKPIs();
+  buildCashflow();
+}
+
+function updateStatus(id, val) {
+  finState[id].status = val;
+  const sel = document.getElementById('sel_' + id);
+  if (sel) sel.className = 'fin-status-sel ' + val;
+  saveFin();
+  updateKPIs();
+}
+
+// ── SIMULADOR ──────────────────────────────────
+function brl(n, decimals=0) {
+  if (n === null || n === undefined) return '—';
+  const abs = Math.abs(n);
+  const fmt = abs.toLocaleString('pt-BR', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+  return (n < 0 ? '(' : '') + 'R$ ' + fmt + (n < 0 ? ')' : '');
+}
+function pct(n) { return (n*100).toFixed(1) + '%'; }
+
+function calcSim() {
+  const venda0   = parseFloat(document.getElementById('s_venda').value)   || 120;
+  const cresc    = parseFloat(document.getElementById('s_cresc').value)   || 10;
+  const descPct  = parseFloat(document.getElementById('s_desc').value)    || 5;     // % faturamento
+  const impPct   = parseFloat(document.getElementById('s_imp').value)     || 8;     // % ROB fixo
+  const alugMin  = parseFloat(document.getElementById('s_aluguel').value) || 6366;
+  const alPct    = parseFloat(document.getElementById('s_al_pct').value)  || 6;
+  const condMes  = parseFloat(document.getElementById('s_cond').value)    || 1200;
+  const locMes   = parseFloat(document.getElementById('s_locacao').value) || 0;
+  const cmvPct   = parseFloat(document.getElementById('s_cmv').value)     || 42.86;
+  const dpPct    = parseFloat(document.getElementById('s_dp').value)      || 14;
+  const odPct    = parseFloat(document.getElementById('s_od').value)      || 8;
+  const cartaoPct= parseFloat(document.getElementById('s_cartao').value)  || 2.5;  // % fat
+  const mktPct   = parseFloat(document.getElementById('s_mkt').value)     || 2;    // % fat
+  const inv      = (parseFloat(document.getElementById('s_inv').value)     || 400) * 1000;
+  const selic    = parseFloat(document.getElementById('s_selic').value)   || 15;
+
+  const anos = [1,2,3,4,5];
+  const rows = { fat:[], desc:[], rob:[], imp:[], rol:[], cmv:[], lb:[], dp:[], cto:[], ctopct:[], od:[], cartao:[], mkt:[], lf:[], lfpct:[] };
+  let kgiro = 0, estoque = 0;
+
+  // Atualiza CTO % diretamente dos inputs — independente do loop
+  const fatAno1    = venda0 * 1000 * 12;
+  const alugPctAno1 = fatAno1 * (alPct/100);
+  const alugEfetivoAno1 = Math.max(alugMin, alugPctAno1/12);
+  const ctoMesAno1 = alugEfetivoAno1 + condMes + locMes;
+  const ctoAno1    = ctoMesAno1 * 12;
+  const ctoPctEl   = document.getElementById('s_cto_total');
+  if (ctoPctEl) ctoPctEl.textContent = (ctoAno1 / fatAno1 * 100).toFixed(1) + '%';
+
+  anos.forEach((a, i) => {
+    const fatorCresc = Math.pow(1 + cresc/100, i);
+    const vendaMes   = venda0 * 1000 * fatorCresc;
+    const fat        = vendaMes * 12;
+    const desc       = fat * (descPct/100);
+    const rob        = fat - desc;
+    const imp        = rob * (impPct/100);
+
+    const rol = rob - imp;
+    const cmv = rob * (cmvPct/100);
+    const lb  = rob - cmv;
+
+    // CTO: maior entre aluguel mínimo e aluguel % faturamento + condomínio + outras despesas locação
+    const alugPct = fat * (alPct/100);
+    const alugEfetivo = Math.max(alugMin, alugPct/12);
+    const ctoMes  = alugEfetivo + condMes + locMes;
+    const cto     = ctoMes * 12;
+
+    const dp      = rob * (dpPct/100);
+    const od      = rob * (odPct/100);
+    const cartao  = fat * (cartaoPct/100);
+    const mkt     = fat * (mktPct/100);
+    const lf      = lb - imp - dp - cto - od - cartao - mkt;
+
+    // Atualiza inputs de resultado (apenas no ano 1)
+    if (i === 0) {
+      const robEl = document.getElementById('s_rob_val');
+      if (robEl) robEl.textContent = brl(rob);
+      const rolEl = document.getElementById('s_rol_val');
+      if (rolEl) rolEl.textContent = brl(rol);
+      const lfEl = document.getElementById('s_lf_val');
+      if (lfEl) {
+        lfEl.textContent = brl(lf);
+        lfEl.style.color = lf >= 0 ? 'var(--green)' : '#e07070';
+      }
+    }
+
+    rows.fat.push(fat); rows.desc.push(-desc); rows.rob.push(rob);
+    rows.imp.push(-imp); rows.rol.push(rol); rows.cmv.push(-cmv);
+    rows.lb.push(lb); rows.dp.push(-dp); rows.cto.push(-cto);
+    rows.ctopct.push(-cto/rob);
+    rows.od.push(-od); rows.cartao.push(-cartao); rows.mkt.push(-mkt);
+    rows.lf.push(lf);
+    rows.lfpct.push(lf/rob);
+
+    if (i===0) {
+      kgiro   = 0;
+      estoque = 0;
+    }
+  });
+
+  const totalInv = inv; // Investimento exatamente como digitado
+  const totalLF  = rows.lf.reduce((s,v) => s + v, 0);
+
+  // Payback: quantos meses para recuperar o investimento somando LF mês a mês
+  let acumulado = -totalInv;
+  let paybackMes = null;
+  for (let m = 0; m < 60; m++) {
+    const anoIdx = Math.floor(m / 12);
+    const lfMes  = rows.lf[Math.min(anoIdx, 4)] / 12;
+    acumulado += lfMes;
+    if (acumulado >= 0 && paybackMes === null) paybackMes = m + 1;
+  }
+
+  // Render DRE — só se painel visível
+  const dreWrap = document.getElementById('simDRE');
+  if (dreWrap) {
+    const dreRows = [
+      { label: 'Faturamento', key: 'fat', cls: 'white', fmt: brl },
+      { label: 'Desconto',    key: 'desc', cls: 'red',   fmt: brl },
+      { label: 'ROB',         key: 'rob', cls: 'white', fmt: brl, sep: true },
+      { label: 'Impostos',    key: 'imp', cls: 'red',   fmt: brl },
+      { label: 'ROL',         key: 'rol', cls: '',      fmt: brl },
+      { label: 'CMV',         key: 'cmv', cls: 'red',   fmt: brl },
+      { label: 'Lucro Bruto', key: 'lb',  cls: 'white', fmt: brl, sep: true },
+      { label: 'Pessoal',     key: 'dp',     cls: 'red', fmt: brl },
+      { label: 'Aluguel/CTO', key: 'cto',    cls: 'red', fmt: brl },
+      { label: 'CTO %',       key: 'ctopct', cls: 'red', fmt: pct },
+      { label: 'Out. Desp.',  key: 'od',     cls: 'red', fmt: brl },
+      { label: 'Tx. Cartão',  key: 'cartao', cls: 'red', fmt: brl },
+      { label: 'Marketing',   key: 'mkt',    cls: 'red', fmt: brl },
+      { label: 'Lucro Final', key: 'lf',  cls: 'green', fmt: brl, sep: true },
+      { label: '% ROB',       key: 'lfpct', cls: '', fmt: (v)=>pct(v) },
+    ];
+    dreWrap.innerHTML = `
+      <div class="sim-dre-head">
+        <div>Item</div>
+        ${anos.map(a=>`<div>Ano ${a}</div>`).join('')}
+      </div>
+      ${dreRows.map(r => {
+        const rowCls = r.key==='lf' ? 'highlight' : r.sep ? 'total' : '';
+        return `<div class="sim-dre-row ${rowCls}">
+          <div class="sim-dre-cell label">${r.label}</div>
+          ${rows[r.key].map(v => {
+            const c = r.key==='lf' ? (v>=0?'green':'red') : r.cls;
+            return `<div class="sim-dre-cell ${c}">${r.fmt(v)}</div>`;
+          }).join('')}
+        </div>`;
+      }).join('')}`;
+  }
+
+  // Render KPIs
+  const resEl = document.getElementById('simResult');
+  if (resEl) {
+    const pbOk  = paybackMes !== null && paybackMes <= 60;
+    const pbTxt = paybackMes !== null ? paybackMes + ' meses' : '> 60 meses';
+    resEl.innerHTML = `
+      <div class="sim-kpi ${rows.lf[0]>=0?'green':''}">
+        <div class="sim-kpi-lbl">Lucro Final Ano 1</div>
+        <div class="sim-kpi-val ${rows.lf[0]>=0?'pos':'neg'}">${brl(rows.lf[0])}</div>
+      </div>
+      <div class="sim-kpi ${rows.lf[4]>=0?'green':''}">
+        <div class="sim-kpi-lbl">Lucro Final Ano 5</div>
+        <div class="sim-kpi-val ${rows.lf[4]>=0?'pos':'neg'}">${brl(rows.lf[4])}</div>
+      </div>
+      <div class="sim-kpi amber">
+        <div class="sim-kpi-lbl">Investimento Total</div>
+        <div class="sim-kpi-val">${brl(totalInv)}</div>
+      </div>
+      <div class="sim-kpi ${pbOk?'green':''}">
+        <div class="sim-kpi-lbl">Payback Estimado</div>
+        <div class="sim-kpi-val ${pbOk?'pos':'neg'}">${pbTxt}</div>
+      </div>
+      <div class="sim-kpi blue">
+        <div class="sim-kpi-lbl">Retorno 5 Anos</div>
+        <div class="sim-kpi-val">${brl(totalLF)}</div>
+      </div>
+      <div class="sim-kpi ${totalLF>=totalInv?'green':''}">
+        <div class="sim-kpi-lbl">ROI 5 Anos</div>
+        <div class="sim-kpi-val ${totalLF>=totalInv?'pos':'neg'}">${pct((totalLF - totalInv)/totalInv)}</div>
+      </div>`;
+  }
+
+  // Render SELIC comparison
+  const selicEl = document.getElementById('simSelic');
+  if (selicEl) {
+    let invCorr = inv;
+    let html = '';
+    anos.forEach((a,i) => {
+      invCorr = invCorr * (1 + selic/100);
+      const diff = rows.lf.slice(0,i+1).reduce((s,v)=>s+v,0) - invCorr;
+      html += `<div class="sim-selic-row">
+        <span class="sim-selic-year">Ano ${a}</span>
+        <span class="sim-selic-val">Inv. corrigido: ${brl(invCorr)}</span>
+        <span class="sim-selic-val" style="color:${diff>=0?'var(--green)':'#e07070'}">${diff>=0?'▲':'▼'} ${brl(Math.abs(diff))}</span>
+      </div>`;
+    });
+    selicEl.innerHTML = html;
+  }
+}
+
+// ── SAZONALIDADE ───────────────────────────────
+const SAZON_KEY = 'democrata_sazon_v7';
+
+const meses = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+const defaultPcts = [9.00, 7.00, 7.20, 6.20, 7.80, 7.90, 8.70, 7.50, 7.70, 7.90, 8.70, 14.40];
+
+let sazonState = {};
+try { sazonState = JSON.parse(localStorage.getItem(SAZON_KEY) || '{}'); } catch(e) {}
+meses.forEach((m, i) => { if (sazonState[i] === undefined) sazonState[i] = defaultPcts[i]; });
+
+function saveSazon() { try { localStorage.setItem(SAZON_KEY, JSON.stringify(sazonState)); } catch(e){} }
+
+function getSazonFatBase() {
+  const venda0 = parseFloat(document.getElementById('s_venda') && document.getElementById('s_venda').value) || 120;
+  return venda0 * 1000 * 12; // faturamento anual = venda mês × 12
+}
+
+function calcSazon() {
+  const fatBase = getSazonFatBase();
+  const fatBaseEl = document.getElementById('sazonFatBase');
+  if (fatBaseEl) fatBaseEl.textContent = brl(fatBase);
+
+  const totalPct = meses.reduce((s, _, i) => s + (parseFloat(sazonState[i]) || 0), 0);
+  const totalEl  = document.getElementById('sazonTotalPct');
+  if (totalEl) {
+    totalEl.textContent = totalPct.toFixed(2) + '%';
+    totalEl.className   = 'sazon-total-val ' + (Math.abs(totalPct - 100) < 0.01 ? 'ok' : 'err');
+  }
+
+  const maxPct = Math.max(...meses.map((_,i) => parseFloat(sazonState[i]) || 0));
+  const minPct = Math.min(...meses.map((_,i) => parseFloat(sazonState[i]) || 0));
+
+  const grid = document.getElementById('sazonGrid');
+  if (!grid) return;
+  grid.innerHTML = '';
+  meses.forEach((mes, i) => {
+    const pct    = parseFloat(sazonState[i]) || 0;
+    const val    = fatBase * pct / 100;
+    const barPct = Math.round(pct / maxPct * 100);
+    const barCls = pct === maxPct ? 'high' : pct === minPct ? 'low' : '';
+    grid.innerHTML += `
+      <div class="sazon-card">
+        <div class="sazon-card-head">
+          <div class="sazon-month">${mes}</div>
+          <div class="sazon-pct-wrap">
+            <input class="sazon-pct-input" type="number" value="${pct}" step="0.1"
+              oninput="updateSazon(${i}, this.value)">
+            <span class="sazon-pct-sym">%</span>
+          </div>
+        </div>
+        <div class="sazon-body">
+          <div class="sazon-val">${brl(val)}</div>
+          <div class="sazon-bar-outer">
+            <div class="sazon-bar-inner ${barCls}" style="width:${barPct}%"></div>
+          </div>
+        </div>
+      </div>`;
+  });
+
+  // Projeção anual 5 anos
+  const cresc   = parseFloat(document.getElementById('s_cresc') && document.getElementById('s_cresc').value) || 10;
+  const anual   = document.getElementById('sazonAnual');
+  if (!anual) return;
+  anual.innerHTML = '<div class="sazon-anual-head">Faturamento por mês · 5 anos de projeção</div>';
+
+  for (let ano = 1; ano <= 5; ano++) {
+    const fator   = Math.pow(1 + cresc/100, ano - 1);
+    const fatAno  = fatBase * fator;
+    const vals    = meses.map((_, i) => fatAno * (parseFloat(sazonState[i]) || 0) / 100);
+    const melhor  = meses[vals.indexOf(Math.max(...vals))];
+    const pior    = meses[vals.indexOf(Math.min(...vals))];
+    anual.innerHTML += `
+      <div class="sazon-anual-row">
+        <div>
+          <div class="sazon-anual-year">Ano ${ano}</div>
+          <div class="sazon-anual-fat">${brl(fatAno)} / ano · ${brl(fatAno/12)} / mês médio</div>
+        </div>
+        <div class="sazon-anual-vals">
+          <span class="sazon-anual-chip best">▲ ${melhor}: ${brl(Math.max(...vals))}</span>
+          <span class="sazon-anual-chip worst">▼ ${pior}: ${brl(Math.min(...vals))}</span>
+        </div>
+      </div>`;
+  }
+}
+
+function updateSazon(idx, val) {
+  sazonState[idx] = parseFloat(val) || 0;
+  saveSazon();
+  calcSazon();
+}
+
+function toggleFatDRE(i) {
+  const dre   = document.getElementById('dre-' + i);
+  const arrow = document.getElementById('arrow-' + i);
+  if (!dre) return;
+  const open = dre.classList.toggle('open');
+  if (arrow) arrow.classList.toggle('open', open);
+  if (open) renderDREMes(i);
+}
+
+function renderDREMes(i) {
+  const dre = document.getElementById('dre-' + i);
+  if (!dre) return;
+
+  const proj = getFatProjetado(i);
+  const inputEl = document.getElementById('fat-input-' + i);
+  const realRaw = inputEl ? inputEl.value : '';
+  const real = realRaw ? parseFatValue(realRaw) : (fatReal[i] || null);
+
+  function gi3(id, def) { const e = document.getElementById(id); return e ? (parseFloat(e.value) || def) : def; }
+  const descPct   = gi3('s_desc',    5);
+  const impPct    = gi3('s_imp',     8);
+  const cmvPct    = gi3('s_cmv',     42.86);
+  const dpPct     = gi3('s_dp',      14);
+  const alugMin   = gi3('s_aluguel', 6366);
+  const alPct     = gi3('s_al_pct',  6);
+  const condMes   = gi3('s_cond',    1200);
+  const locMes    = gi3('s_locacao', 0);
+  const cartaoPct = gi3('s_cartao',  2.5);
+  const mktPct    = gi3('s_mkt',     2);
+  const odPct     = gi3('s_od',      8);
+
+  function calcDRE2(fat) {
+    const desc   = fat * (descPct/100);
+    const rob    = fat - desc;
+    const imp    = rob * (impPct/100);
+    const rol    = rob - imp;
+    const cmv    = rob * (cmvPct/100);
+    const lb     = rob - cmv;
+    const dp     = rob * (dpPct/100);
+    const alugEf = Math.max(alugMin, fat * alPct/100);
+    const cto    = alugEf + condMes + locMes;
+    const cartao = fat * (cartaoPct/100);
+    const mkt    = fat * (mktPct/100);
+    const od     = rob * (odPct/100);
+    const lf     = lb - imp - dp - cto - od - cartao - mkt;
+    return { fat, desc, rob, imp, rol, cmv, lb, dp, cto, cartao, mkt, od, lf };
+  }
+
+  const dreP = calcDRE2(proj);
+  const dreR = real !== null ? calcDRE2(real) : null;
+
+  function row(label, pv, rv, isNeg, highlight, sub) {
+    const cls = highlight ? 'highlight' : sub ? 'subtotal' : '';
+    const pShow = isNeg ? -pv : pv;
+    const rShow = rv !== null ? (isNeg ? -rv : rv) : null;
+    const rCls  = rv === null ? 'neu' : highlight ? (rShow >= 0 ? 'pos' : 'neg') : '';
+    return `<div class="fat-dre-row ${cls}">
+      <div class="fat-dre-label">${label}</div>
+      <div class="fat-dre-proj">${fmtBRL(pShow)}</div>
+      <div class="fat-dre-real ${rCls}">${rShow !== null ? fmtBRL(rShow) : '—'}</div>
+    </div>`;
+  }
+
+  dre.innerHTML = `
+    <div class="fat-dre-head-row">
+      <div>Item</div><div style="text-align:right">Projetado</div><div style="text-align:right">Real</div>
+    </div>
+    ${row('Faturamento',   dreP.fat,    dreR ? dreR.fat    : null, false, false, false)}
+    ${row('(-) Desconto',  dreP.desc,   dreR ? dreR.desc   : null, true,  false, false)}
+    ${row('ROB',           dreP.rob,    dreR ? dreR.rob    : null, false, false, true)}
+    ${row('(-) Imposto',   dreP.imp,    dreR ? dreR.imp    : null, true,  false, false)}
+    ${row('ROL',           dreP.rol,    dreR ? dreR.rol    : null, false, false, true)}
+    ${row('(-) CMV',       dreP.cmv,    dreR ? dreR.cmv    : null, true,  false, false)}
+    ${row('Lucro Bruto',   dreP.lb,     dreR ? dreR.lb     : null, false, false, true)}
+    ${row('(-) Pessoal',   dreP.dp,     dreR ? dreR.dp     : null, true,  false, false)}
+    ${row('(-) CTO',       dreP.cto,    dreR ? dreR.cto    : null, true,  false, false)}
+    ${row('(-) Outras Desp.', dreP.od,  dreR ? dreR.od     : null, true,  false, false)}
+    ${row('(-) Tx. Cartão',dreP.cartao, dreR ? dreR.cartao : null, true,  false, false)}
+    ${row('(-) Marketing', dreP.mkt,    dreR ? dreR.mkt    : null, true,  false, false)}
+    ${row('Lucro Final',   dreP.lf,     dreR ? dreR.lf     : null, false, true,  false)}`;
+}
+
+function parseFatValue(val) {
+  const str = String(val).trim();
+  if (!str) return null;
+  const hasDot = str.includes('.');
+  const hasComma = str.includes(',');
+  let clean;
+  if (hasDot && hasComma) {
+    clean = str.replace(/\./g, '').replace(',', '.');
+  } else if (hasComma) {
+    clean = str.replace(',', '.');
+  } else if (hasDot) {
+    const partes = str.split('.');
+    clean = partes[partes.length-1].length <= 2 && partes.length === 2 ? str : str.replace(/\./g, '');
+  } else {
+    clean = str;
+  }
+  const n = parseFloat(clean.replace(/[^0-9.]/g, '')) || 0;
+  return n || null;
+}
+
+// ── DRE CONSOLIDADO ────────────────────────────
+let dreView = 'trimestral'; // 'trimestral' | 'mensal' | 'anual'
+
+function setDreView(v) {
+  dreView = v;
+  ['3','12','Ano'].forEach(x => {
+    const btn = document.getElementById('dreBtn' + x);
+    if (btn) btn.classList.toggle('active',
+      (x==='3' && v==='trimestral') ||
+      (x==='12' && v==='mensal') ||
+      (x==='Ano' && v==='anual')
+    );
+  });
+  renderDRE();
+}
+
+function renderDRE() {
+  function gi(id, def) { const e = document.getElementById(id); return e ? (parseFloat(e.value) || def) : def; }
+  const venda0    = gi('s_venda',   120);
+  const cresc     = gi('s_cresc',   10);
+  const descPct   = gi('s_desc',    5);
+  const impPct    = gi('s_imp',     8);
+  const cmvPct    = gi('s_cmv',     42.86);
+  const dpPct     = gi('s_dp',      14);
+  const alugMin   = gi('s_aluguel', 6366);
+  const alPct     = gi('s_al_pct',  6);
+  const condMes   = gi('s_cond',    1200);
+  const locMes    = gi('s_locacao', 0);
+  const cartaoPct = gi('s_cartao',  2.5);
+  const mktPct    = gi('s_mkt',     2);
+  const odPct     = gi('s_od',      8);
+
+  const fatAnual  = venda0 * 1000 * 12;
+  const meses     = ['Jul/26','Ago/26','Set/26','Out/26','Nov/26','Dez/26','Jan/27','Fev/27','Mar/27','Abr/27','Mai/27','Jun/27'];
+  const sazonIdx  = [6,7,8,9,10,11,0,1,2,3,4,5];
+
+  function calcDRE(fat) {
+    const desc   = fat * (descPct/100);
+    const rob    = fat - desc;
+    const imp    = rob * (impPct/100);
+    const rol    = rob - imp;
+    const cmv    = rob * (cmvPct/100);
+    const lb     = rob - cmv;
+    const dp     = rob * (dpPct/100);
+    const alugEf = Math.max(alugMin, fat * alPct/100);
+    const cto    = alugEf + condMes + locMes;
+    const cartao = fat * (cartaoPct/100);
+    const mkt    = fat * (mktPct/100);
+    const od     = rob * (odPct/100);
+    const lf     = lb - imp - dp - cto - od - cartao - mkt;
+    return { fat, desc, rob, imp, rol, cmv, lb, dp, cto, cartao, mkt, od, lf };
+  }
+
+  // Calcula DRE projetado e real por mês
+  const dadosMes = meses.map((mes, i) => {
+    const ano     = i < 6 ? 1 : 2;
+    const fator   = Math.pow(1 + cresc/100, ano - 1);
+    const pct     = parseFloat((sazonState ? sazonState[sazonIdx[i]] : 0) || 0);
+    const fatProj = fatAnual * fator * pct / 100;
+    const fatRealVal = (fatReal && fatReal[i] !== undefined && fatReal[i] !== null) ? fatReal[i] : null;
+    return {
+      mes,
+      proj: calcDRE(fatProj),
+      real: fatRealVal !== null ? calcDRE(fatRealVal) : null,
+      temReal: fatRealVal !== null,
+    };
+  });
+
+  // Agrupa conforme visão
+  let grupos = [];
+  if (dreView === 'mensal') {
+    grupos = dadosMes.map(d => ({ label: d.mes.replace('/26','').replace('/27',''), meses: [d] }));
+  } else if (dreView === 'trimestral') {
+    for (let i = 0; i < 12; i += 3) {
+      const slice = dadosMes.slice(i, i+3);
+      grupos.push({ label: slice[0].mes.split('/')[0] + '–' + slice[slice.length-1].mes.split('/')[0], meses: slice });
+    }
+  } else {
+    // Agrupa por ano calendário: 2026 = Jul–Dez, 2027 = Jan–Jun
+    grupos = [
+      { label: '2026', meses: dadosMes.slice(0, 6) },
+      { label: '2027', meses: dadosMes.slice(6, 12) },
+    ];
+  }
+
+  function somaGrupo(grupo, key, useReal) {
+    return grupo.meses.reduce((s, d) => {
+      const src = useReal && d.real ? d.real : d.proj;
+      return s + (src[key] || 0);
+    }, 0);
+  }
+
+  const linhas = [
+    { key: 'fat',    label: 'Faturamento',    cls: 'white', neg: false },
+    { key: 'desc',   label: '(-) Desconto',   cls: 'red',   neg: true  },
+    { key: 'rob',    label: 'ROB',             cls: 'white', neg: false, sub: true },
+    { key: 'imp',    label: '(-) Imposto',     cls: 'red',   neg: true  },
+    { key: 'rol',    label: 'ROL',             cls: '',      neg: false, sub: true },
+    { key: 'cmv',    label: '(-) CMV',         cls: 'red',   neg: true  },
+    { key: 'lb',     label: 'Lucro Bruto',     cls: 'white', neg: false, sub: true },
+    { key: 'dp',     label: '(-) Pessoal',     cls: 'red',   neg: true  },
+    { key: 'cto',    label: '(-) CTO',         cls: 'red',   neg: true  },
+    { key: 'od',     label: '(-) Outras Desp.',cls: 'red',   neg: true  },
+    { key: 'cartao', label: '(-) Tx. Cartão',  cls: 'red',   neg: true  },
+    { key: 'mkt',    label: '(-) Marketing',   cls: 'red',   neg: true  },
+    { key: 'lf',     label: 'Lucro Final',     cls: 'green', neg: false, highlight: true },
+  ];
+
+  // Colunas: Projetado, Real, Variação por grupo
+  const temReal = dadosMes.some(d => d.temReal);
+  const numCols = dreView === 'mensal' ? grupos.length : grupos.length;
+
+  // ── TABELA ──
+  const tableEl = document.getElementById('dreTable');
+  if (!tableEl) return;
+
+  let html = `<div style="background:var(--card);border-radius:12px;overflow:hidden;min-width:${dreView==='mensal'?'700px':'300px'}">`;
+
+  // Header
+  html += `<div style="display:grid;grid-template-columns:100px ${grupos.map(()=>'1fr 1fr').join(' ')};background:#1e1e1e;padding:8px 10px;gap:2px">
+    <div style="font-size:0.58rem;color:var(--gray);text-transform:uppercase;letter-spacing:1px">Item</div>
+    ${grupos.map(g => `
+      <div style="grid-column:span 2;text-align:center;font-size:0.58rem;color:#fff;letter-spacing:1px;text-transform:uppercase;padding-bottom:4px;border-bottom:1px solid #333">${g.label}</div>
+    `).join('')}
+  </div>
+  <div style="display:grid;grid-template-columns:100px ${grupos.map(()=>'1fr 1fr').join(' ')};background:#181818;padding:4px 10px;gap:2px">
+    <div></div>
+    ${grupos.map(() => `
+      <div style="font-size:0.55rem;color:var(--gray);text-align:right">Proj.</div>
+      <div style="font-size:0.55rem;color:#5a9fd4;text-align:right;background:rgba(74,122,219,0.08);border-left:1px solid rgba(74,122,219,0.15)">Real</div>
+    `).join('')}
+  </div>`;
+
+  // Linhas
+  linhas.forEach(l => {
+    const rowCls = l.highlight ? 'dre-row-highlight' : l.sub ? 'dre-row-total' : '';
+    html += `<div style="display:grid;grid-template-columns:100px ${grupos.map(()=>'1fr 1fr').join(' ')};padding:7px 10px;gap:2px;border-top:1px solid #1e1e1e" class="${rowCls}">
+      <div class="dre-cell label" style="font-weight:${l.highlight?'600':'400'}">${l.label}</div>
+      ${grupos.map(g => {
+        const proj = somaGrupo(g, l.key, false);
+        const realSum = g.meses.every(d => d.temReal) ? somaGrupo(g, l.key, true) : null;
+        const pv = l.neg ? -proj : proj;
+        const rv = realSum !== null ? (l.neg ? -realSum : realSum) : null;
+        const lfCls = l.highlight ? (rv !== null ? (rv >= 0 ? 'green' : 'red') : 'amber') : l.cls;
+        return `
+          <div class="dre-cell ${l.cls}" style="text-align:right">${fmtBRL(pv)}</div>
+          <div class="dre-cell ${rv!==null?(l.highlight?(rv>=0?'green':'red'):l.cls):'dre-cell'}" style="text-align:right;opacity:${rv===null?0.3:1};background:rgba(74,122,219,0.08);border-left:1px solid rgba(74,122,219,0.15)">${rv !== null ? fmtBRL(rv) : '—'}</div>`;
+      }).join('')}
+    </div>`;
+  });
+
+  // Margem %
+  html += `<div style="display:grid;grid-template-columns:100px ${grupos.map(()=>'1fr 1fr').join(' ')};padding:7px 10px;gap:2px;border-top:1px solid #2a2a2a;background:#181818">
+    <div class="dre-cell label">Margem LF %</div>
+    ${grupos.map(g => {
+      const projFat = somaGrupo(g, 'fat', false);
+      const projLF  = somaGrupo(g, 'lf',  false);
+      const realFatG = g.meses.every(d => d.temReal) ? somaGrupo(g, 'fat', true) : null;
+      const realLFG  = g.meses.every(d => d.temReal) ? somaGrupo(g, 'lf',  true) : null;
+      const mProj = projFat > 0 ? (projLF/projFat*100).toFixed(1)+'%' : '—';
+      const mReal = realFatG !== null && realFatG > 0 ? (realLFG/realFatG*100).toFixed(1)+'%' : '—';
+      return `
+        <div class="dre-cell amber" style="text-align:right">${mProj}</div>
+        <div class="dre-cell ${mReal!=='—'?(parseFloat(mReal)>=0?'green':'red'):'dre-cell'}" style="text-align:right;opacity:${mReal==='—'?0.3:1};background:rgba(74,122,219,0.08);border-left:1px solid rgba(74,122,219,0.15)">${mReal}</div>`;
+    }).join('')}
+  </div>`;
+
+  html += `</div>`;
+  tableEl.innerHTML = html;
+
+  // ── KPIs ──
+  const kpisEl = document.getElementById('dreKpis');
+  if (kpisEl) {
+    const totalFatProj = dadosMes.reduce((s,d) => s + d.proj.fat, 0);
+    const totalLFProj  = dadosMes.reduce((s,d) => s + d.proj.lf,  0);
+    const mesesComReal = dadosMes.filter(d => d.temReal);
+    const totalFatReal = mesesComReal.reduce((s,d) => s + (d.real ? d.real.fat : 0), 0);
+    const totalLFReal  = mesesComReal.reduce((s,d) => s + (d.real ? d.real.lf  : 0), 0);
+    const margProj = totalFatProj > 0 ? (totalLFProj/totalFatProj*100).toFixed(1) : '—';
+    const margReal = totalFatReal > 0 ? (totalLFReal/totalFatReal*100).toFixed(1) : '—';
+    kpisEl.innerHTML = `
+      <div class="sim-kpi amber">
+        <div class="sim-kpi-lbl">Fat. Projetado (12m)</div>
+        <div class="sim-kpi-val">${fmtBRL(totalFatProj)}</div>
+      </div>
+      <div class="sim-kpi ${mesesComReal.length>0?'green':''}">
+        <div class="sim-kpi-lbl">Fat. Real Acumulado</div>
+        <div class="sim-kpi-val">${mesesComReal.length>0 ? fmtBRL(totalFatReal) : '—'}</div>
+      </div>
+      <div class="sim-kpi ${totalLFProj>=0?'green':''}">
+        <div class="sim-kpi-lbl">LF Projetado (12m)</div>
+        <div class="sim-kpi-val ${totalLFProj>=0?'pos':'neg'}">${fmtBRL(totalLFProj)}</div>
+      </div>
+      <div class="sim-kpi ${mesesComReal.length>0&&totalLFReal>=0?'green':''}">
+        <div class="sim-kpi-lbl">LF Real Acumulado</div>
+        <div class="sim-kpi-val ${mesesComReal.length>0?(totalLFReal>=0?'pos':'neg'):''}">${mesesComReal.length>0 ? fmtBRL(totalLFReal) : '—'}</div>
+      </div>
+      <div class="sim-kpi blue">
+        <div class="sim-kpi-lbl">Margem LF Projetada</div>
+        <div class="sim-kpi-val">${margProj}%</div>
+      </div>
+      <div class="sim-kpi ${mesesComReal.length>0?'green':''}">
+        <div class="sim-kpi-lbl">Margem LF Real</div>
+        <div class="sim-kpi-val">${margReal !== '—' ? margReal + '%' : '—'}</div>
+      </div>`;
+  }
+
+  // ── GRÁFICO LUCRO FINAL ──
+  const chartEl = document.getElementById('dreChart');
+  if (chartEl) {
+    const maxVal = Math.max(...dadosMes.map(d => Math.max(Math.abs(d.proj.lf), d.real ? Math.abs(d.real.lf) : 0)), 1);
+    chartEl.innerHTML = `
+      <div style="background:var(--card);border-radius:12px;padding:16px 14px 10px">
+        <div style="display:flex;gap:3px;align-items:flex-end;height:80px">
+          ${dadosMes.map(d => {
+            const hProj = Math.round(Math.abs(d.proj.lf) / maxVal * 70);
+            const hReal = d.real ? Math.round(Math.abs(d.real.lf) / maxVal * 70) : 0;
+            const projPos = d.proj.lf >= 0;
+            const realPos = d.real && d.real.lf >= 0;
+            return `<div style="flex:1;display:flex;gap:1px;align-items:flex-end;height:70px">
+              <div style="flex:1;height:${hProj}px;background:${projPos?'rgba(45,158,95,0.4)':'rgba(204,27,27,0.4)'};border-radius:2px 2px 0 0"></div>
+              <div style="flex:1;height:${hReal}px;background:${d.real?(realPos?'var(--green)':'#e07070'):'transparent'};border-radius:2px 2px 0 0"></div>
+            </div>`;
+          }).join('')}
+        </div>
+        <div style="display:flex;gap:3px;margin-top:4px">
+          ${dadosMes.map(d => `<div style="flex:1;font-size:0.48rem;color:var(--gray);text-align:center">${d.mes.replace('/26','').replace('/27','')}</div>`).join('')}
+        </div>
+        <div style="display:flex;gap:14px;margin-top:10px;justify-content:center;flex-wrap:wrap">
+          <span style="font-size:0.6rem;color:var(--gray);display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;background:rgba(45,158,95,0.4);border-radius:1px;display:inline-block"></span>LF Projetado</span>
+          <span style="font-size:0.6rem;color:var(--gray);display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;background:var(--green);border-radius:1px;display:inline-block"></span>LF Real</span>
+        </div>
+      </div>`;
+  }
+}
+
+// ── CMV / ESTOQUE ──────────────────────────────
+const CMV_REAL_KEY = 'democrata_cmv_real_v8';
+let cmvReal = {};
+try { cmvReal = JSON.parse(localStorage.getItem(CMV_REAL_KEY) || '{}'); } catch(e) {}
+function saveCmvReal() { try { localStorage.setItem(CMV_REAL_KEY, JSON.stringify(cmvReal)); } catch(e){} }
+
+function updateCmvReal(i, val) {
+  const n = parseFatValue(String(val));
+  cmvReal[i] = n || null;
+  saveCmvReal();
+  renderCMV();
+  buildCashflow();
+}
+function renderCMV() {
+  function gi(id, def) { const e = document.getElementById(id); return e ? (parseFloat(e.value) || def) : def; }
+  const venda0   = gi('s_venda',   120);
+  const cresc    = gi('s_cresc',   10);
+  const descPct  = gi('s_desc',    5);
+  const cmvPct   = gi('s_cmv',     42.86);
+  const giro     = gi('cmvGiro',   3);
+  const p1dias   = gi('cmvP1',     30);
+  const p2dias   = gi('cmvP2',     60);
+  const p3dias   = gi('cmvP3',     90);
+  const p4dias   = gi('cmvP4',     120);
+  const precoPar = gi('cmvPrecoPar', 0);
+  const offsets3 = [Math.round(p1dias/30), Math.round(p2dias/30), Math.round(p3dias/30)];
+  const offsets4 = [Math.round(p1dias/30), Math.round(p2dias/30), Math.round(p3dias/30), Math.round(p4dias/30)];
+
+  const cmvDisp = document.getElementById('cmvPctDisplay');
+  if (cmvDisp) cmvDisp.textContent = cmvPct.toFixed(2) + '%';
+
+  const fatAnual  = venda0 * 1000 * 12;
+  const mesesCMV  = ['Jul/26','Ago/26','Set/26','Out/26','Nov/26','Dez/26','Jan/27','Fev/27','Mar/27','Abr/27','Mai/27','Jun/27'];
+  const sazonIdx  = [6,7,8,9,10,11,0,1,2,3,4,5];
+
+  const dados = mesesCMV.map((mes, i) => {
+    const ano      = i < 6 ? 1 : 2;
+    const fator    = Math.pow(1 + cresc/100, ano - 1);
+    const realFat  = fatReal[i] || null;
+    const fatMes   = realFat !== null ? realFat : fatAnual * fator * (parseFloat((sazonState && sazonState[sazonIdx[i]]) || 0) / 100);
+    const rob      = fatMes * (1 - descPct/100);
+    const cmvMes   = rob * (cmvPct/100);
+    const isInaugural = i === 0;
+    const offsets  = isInaugural ? offsets4 : offsets3;
+    const nParc    = offsets.length;
+    const compraProj  = isInaugural ? cmvMes * giro : cmvMes;
+    const compraReal  = (cmvReal[i] !== undefined && cmvReal[i] !== null) ? cmvReal[i] : null;
+    const compra      = compraReal !== null ? compraReal : compraProj;
+    const estoqueNec  = cmvMes * giro;
+    const paresVendidos = precoPar > 0 ? Math.round(cmvMes / precoPar) : null;
+    const paresEstoque  = precoPar > 0 ? Math.round(estoqueNec / precoPar) : null;
+    const paresCompra   = precoPar > 0 ? Math.round(compra / precoPar) : null;
+    return { mes, fatMes, cmvMes, estoqueNec, compraProj, compraReal, compra, isInaugural, realFat, paresVendidos, paresEstoque, paresCompra, offsets, nParc };
+  });
+
+  // Monta desembolsos
+  const desembolso = Array(mesesCMV.length + 5).fill(0).map(() => []);
+  dados.forEach((d, i) => {
+    const parcVal = d.compra / d.nParc;
+    d.offsets.forEach((off, pi) => {
+      const idx = i + off;
+      if (idx < desembolso.length) {
+        desembolso[idx].push({ origem: d.mes, parc: pi+1, nParc: d.nParc, val: parcVal, isInaugural: d.isInaugural });
+      }
+    });
+  });
+
+  // ── VISÃO GERAL — tabela limpa com barras ──
+  const timelineEl = document.getElementById('cmvTimeline');
+  if (timelineEl) {
+    const maxCompra   = Math.max(...dados.map(d => d.compraProj), 1);
+    const maxDesemb   = Math.max(...desembolso.slice(0, mesesCMV.length).map(d => d.reduce((s,v)=>s+v.val,0)), 1);
+
+    let html = `<div style="background:var(--card);border-radius:12px;overflow:hidden;margin-bottom:8px">`;
+
+    // Header
+    html += `<div style="display:grid;grid-template-columns:60px 1fr 1fr 1fr;gap:0;background:#1e1e1e;padding:8px 14px;font-size:0.58rem;letter-spacing:1px;text-transform:uppercase;color:var(--gray)">
+      <div>Mês</div><div style="text-align:right">Compra</div><div style="text-align:right">Desembolso</div><div style="text-align:right">Pares</div>
+    </div>`;
+
+    dados.forEach((d, i) => {
+      const desembTotal = desembolso[i].reduce((s,v)=>s+v.val,0);
+      const barCompra   = Math.round(d.compraProj / maxCompra * 100);
+      const barDesemb   = Math.round(desembTotal  / maxDesemb * 100);
+      const temReal     = d.compraReal !== null;
+      const paresStr    = d.paresCompra !== null ? d.paresCompra + ' pares' : '—';
+
+      html += `<div style="padding:10px 14px;border-top:1px solid #2e2e2e">
+        <div style="display:grid;grid-template-columns:60px 1fr 1fr 1fr;gap:0;align-items:center;margin-bottom:6px">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:0.9rem;color:#fff;letter-spacing:1px">${d.mes.replace('/26','').replace('/27','')}</div>
+          <div style="text-align:right">
+            <div style="font-size:0.72rem;color:${temReal?'var(--green)':'#ccc'}">${fmtBRL(d.compra)}</div>
+            ${temReal ? `<div style="font-size:0.58rem;color:var(--gray)">proj: ${fmtBRL(d.compraProj)}</div>` : ''}
+          </div>
+          <div style="text-align:right;font-size:0.72rem;color:${desembTotal>0?'var(--amber)':'#444'}">${desembTotal>0?fmtBRL(desembTotal):'—'}</div>
+          <div style="text-align:right;font-size:0.72rem;color:#aaa">${paresStr}</div>
+        </div>
+        <div style="display:grid;grid-template-columns:60px 1fr 1fr 1fr;gap:4px;align-items:center">
+          <div></div>
+          <div style="padding-right:8px">
+            <div style="height:4px;background:#2a2a2a;border-radius:99px;overflow:hidden">
+              <div style="height:100%;width:${barCompra}%;background:${temReal?'var(--green)':'#5a9fd4'};border-radius:99px"></div>
+            </div>
+          </div>
+          <div style="padding-right:8px">
+            <div style="height:4px;background:#2a2a2a;border-radius:99px;overflow:hidden">
+              <div style="height:100%;width:${barDesemb}%;background:var(--amber);border-radius:99px"></div>
+            </div>
+          </div>
+          <div></div>
+        </div>
+      </div>`;
+    });
+
+    // Legenda
+    html += `<div style="padding:10px 14px;border-top:1px solid #2e2e2e;display:flex;gap:14px;flex-wrap:wrap">
+      <span style="font-size:0.6rem;color:#5a9fd4;display:flex;align-items:center;gap:4px"><span style="width:8px;height:3px;background:#5a9fd4;border-radius:1px;display:inline-block"></span>Compra projetada</span>
+      <span style="font-size:0.6rem;color:var(--green);display:flex;align-items:center;gap:4px"><span style="width:8px;height:3px;background:var(--green);border-radius:1px;display:inline-block"></span>Compra real</span>
+      <span style="font-size:0.6rem;color:var(--amber);display:flex;align-items:center;gap:4px"><span style="width:8px;height:3px;background:var(--amber);border-radius:1px;display:inline-block"></span>Desembolso (parcelas)</span>
+    </div>`;
+
+    html += `</div>`;
+
+    // ── POSIÇÃO DE ESTOQUE ──
+    html += `<div style="background:var(--card);border-radius:12px;overflow:hidden;margin-bottom:8px">
+      <div style="background:#1e1e1e;padding:10px 14px;font-size:0.62rem;letter-spacing:2px;text-transform:uppercase;color:var(--gray)">
+        Posição de Estoque${precoPar > 0 ? ' — em Pares' : ' — preencha o preço médio por par'}
+      </div>`;
+
+    let saldoPares = 0;
+    let saldoVal   = 0;
+    dados.forEach((d, i) => {
+      const entradaPares = d.paresCompra !== null ? d.paresCompra : null;
+      const saidaPares   = d.paresVendidos !== null ? d.paresVendidos : null;
+      if (entradaPares !== null) saldoPares += entradaPares;
+      if (saidaPares  !== null) saldoPares -= saidaPares;
+      saldoVal += d.compra - d.cmvMes;
+
+      const metaPares = d.paresEstoque !== null ? d.paresEstoque : null;
+      const pctMeta   = metaPares && metaPares > 0 ? Math.min(100, Math.round(saldoPares / metaPares * 100)) : 0;
+      const corBarra  = pctMeta >= 80 ? 'var(--green)' : pctMeta >= 50 ? 'var(--amber)' : '#e07070';
+      const status    = pctMeta >= 80 ? '✓ OK' : pctMeta >= 50 ? '⚠ Baixo' : '🔴 Crítico';
+
+      html += `<div style="padding:10px 14px;border-top:1px solid #2e2e2e">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:0.9rem;letter-spacing:1px;color:#ccc">${d.mes}</div>
+          <div style="display:flex;gap:10px;align-items:center">
+            ${metaPares !== null ? `<span style="font-size:0.62rem;color:var(--gray)">Meta: ${metaPares} pares</span>` : ''}
+            ${entradaPares !== null ? `<span style="font-size:0.62rem;color:#5a9fd4">+${entradaPares} entrada</span>` : ''}
+            ${saidaPares   !== null ? `<span style="font-size:0.62rem;color:#e07070">-${saidaPares} saída</span>` : ''}
+            <span style="font-size:0.65rem;font-weight:600;color:${precoPar>0?'#fff':'var(--gray)'}">
+              ${precoPar > 0 ? saldoPares + ' pares' : fmtBRL(d.estoqueNec)}
+            </span>
+            ${metaPares !== null ? `<span style="font-size:0.6rem;padding:1px 6px;border-radius:3px;background:rgba(255,255,255,0.05);color:${corBarra}">${status}</span>` : ''}
+          </div>
+        </div>
+        ${metaPares !== null ? `
+        <div style="height:5px;background:#2a2a2a;border-radius:99px;overflow:hidden">
+          <div style="height:100%;width:${pctMeta}%;background:${corBarra};border-radius:99px;transition:width 0.3s"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:0.55rem;color:var(--gray);margin-top:2px">
+          <span>0</span><span>${pctMeta}% da meta</span><span>${metaPares} pares</span>
+        </div>` : ''}
+      </div>`;
+    });
+    html += `</div>`;
+
+    timelineEl.innerHTML = html;
+  }
+
+  // ── TABELA REAL × PROJETADO ──
+  const cmvTableEl = document.getElementById('cmvRealTable');
+  if (cmvTableEl) {
+    cmvTableEl.innerHTML = dados.map((d, i) => {
+      const real  = d.compraReal;
+      const varR  = real !== null ? real - d.compraProj : null;
+      const varP  = real !== null && d.compraProj > 0 ? (real - d.compraProj) / d.compraProj * 100 : null;
+      return `<div class="fat-row" style="grid-template-columns:80px repeat(4,1fr)">
+        <div class="fat-mes">${d.mes.replace('/26','').replace('/27','')}</div>
+        <div class="fat-proj">${fmtBRL(d.compraProj)}</div>
+        <input class="fat-real-input" placeholder="—"
+          value="${real !== null ? real.toLocaleString('pt-BR',{maximumFractionDigits:0}) : ''}"
+          onblur="updateCmvReal(${i}, this.value)"
+          onkeydown="if(event.key==='Enter')this.blur()">
+        <div class="fat-var ${varR===null?'zero':varR>=0?'pos':'neg'}">
+          ${varR !== null ? (varR>=0?'+':'')+fmtBRL(varR) : '—'}
+        </div>
+        <div class="fat-var ${varP===null?'zero':varP>=0?'pos':'neg'}">
+          ${varP !== null ? (varP>=0?'+':'')+varP.toFixed(1)+'%' : '—'}
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  // ── CARDS ──
+  const cardsEl = document.getElementById('cmvCards');
+  if (!cardsEl) return;
+  cardsEl.innerHTML = dados.map((d, i) => {
+    const desembMes   = desembolso[i];
+    const totalDesemb = desembMes.reduce((s,v)=>s+v.val, 0);
+    const badge       = d.isInaugural ? 'init' : 'ok';
+    const badgeLabel  = d.isInaugural ? '⭐ Inaugural' : '🔄 Reposição';
+
+    return `<div class="cmv-month-card">
+      <div class="cmv-month-head">
+        <div class="cmv-month-title">${d.mes}</div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-size:0.65rem;color:${d.compraReal!==null?'var(--green)':'var(--gray)'}">
+            ${d.compraReal !== null ? '📊 Real' : '〜 Proj.'}
+          </span>
+          <span class="cmv-month-badge ${badge}">${badgeLabel}</span>
+        </div>
+      </div>
+      <div class="cmv-parcelas">
+        <div class="cmv-parc-title">Compra: ${fmtBRL(d.compra)}${d.paresCompra ? ' · ' + d.paresCompra + ' pares' : ''} · ${d.nParc}× parcelas</div>
+        ${d.offsets.map((off, pi) => {
+          const mPagIdx = i + off;
+          const mPag = mPagIdx < mesesCMV.length ? mesesCMV[mPagIdx] : '+' + (mPagIdx - mesesCMV.length + 1) + ' mês';
+          const dias = [p1dias,p2dias,p3dias,p4dias][pi];
+          const pcCls = ['p1','p2','p3','p3'][pi];
+          return `<div class="cmv-parc-row">
+            <span class="cmv-parc-chip ${pcCls}">${pi+1}/${d.nParc} · ${dias}d${d.isInaugural&&pi===3?' ⭐':''}</span>
+            <span class="cmv-parc-label">Vence em ${mPag}</span>
+            <span class="cmv-parc-val">${fmtBRL(d.compra/d.nParc)}</span>
+          </div>`;
+        }).join('')}
+      </div>
+      ${totalDesemb > 0 ? `
+      <div class="cmv-desembolso">
+        <div>
+          <div class="cmv-desemb-label">Desembolso neste mês</div>
+          <div style="font-size:0.6rem;color:var(--gray)">${desembMes.length} parcela(s) vencendo</div>
+        </div>
+        <div class="cmv-desemb-val">${fmtBRL(totalDesemb)}</div>
+      </div>` : ''}
+    </div>`;
+  }).join('');
+}
+
+// ── FATURAMENTO ────────────────────────────────
+const FAT_KEY = 'democrata_fat_v8';
+const mesesFat = ['Jul/26','Ago/26','Set/26','Out/26','Nov/26','Dez/26','Jan/27','Fev/27','Mar/27','Abr/27','Mai/27','Jun/27'];
+const mesesSazonIdx = [6,7,8,9,10,11,0,1,2,3,4,5]; // índice no sazonState (0=jan)
+
+let fatReal = {};
+try { fatReal = JSON.parse(localStorage.getItem(FAT_KEY) || '{}'); } catch(e) {}
+
+function saveFatReal() { try { localStorage.setItem(FAT_KEY, JSON.stringify(fatReal)); } catch(e){} }
+
+function getFatProjetado(idx) {
+  const venda0   = parseFloat((document.getElementById('s_venda') || {}).value) || 120;
+  const cresc    = parseFloat((document.getElementById('s_cresc') || {}).value) || 10;
+  const fatAnual = venda0 * 1000 * 12;
+  // Jul–Dez = Ano 1 (idx 0–5), Jan–Jun = Ano 2 (idx 6–11)
+  const ano      = idx < 6 ? 1 : 2;
+  const fator    = Math.pow(1 + cresc/100, ano - 1);
+  const sazonIdx = mesesSazonIdx[idx];
+  const pct      = parseFloat((sazonState ? sazonState[sazonIdx] : 0) || 0);
+  return fatAnual * fator * pct / 100;
+}
+
+function updateFatReal(i, val) {
+  const str = String(val).trim();
+  let n = 0;
+  if (str) {
+    const hasDot   = str.includes('.');
+    const hasComma = str.includes(',');
+    let clean;
+    if (hasDot && hasComma) {
+      // Ex: 125.280,00 → remove pontos de milhar, troca vírgula por ponto
+      clean = str.replace(/\./g, '').replace(',', '.');
+    } else if (hasComma) {
+      // Ex: 125280,00 → troca vírgula por ponto
+      clean = str.replace(',', '.');
+    } else if (hasDot) {
+      // Ex: 125.280 → ponto é milhar, remove
+      // Mas se tiver só 2 ou 3 dígitos depois do ponto pode ser decimal
+      const partes = str.split('.');
+      const ultimaParte = partes[partes.length - 1];
+      if (ultimaParte.length <= 2 && partes.length === 2) {
+        // Ex: 125.28 → decimal
+        clean = str;
+      } else {
+        // Ex: 125.280 → milhar
+        clean = str.replace(/\./g, '');
+      }
+    } else {
+      clean = str;
+    }
+    n = parseFloat(clean.replace(/[^0-9.]/g, '')) || 0;
+  }
+  fatReal[i] = n || null;
+  saveFatReal();
+  renderFatSummary();
+  // Atualiza DRE se estiver aberto
+  const dre = document.getElementById('dre-' + i);
+  if (dre && dre.classList.contains('open')) renderDREMes(i);
+}
+
+function renderFatSummary() {
+  const kpisEl  = document.getElementById('fatKpis');
+  const chartEl = document.getElementById('fatChart');
+  const totalEl = document.getElementById('fatTotalRow');
+  if (!kpisEl) return;
+
+  const rows = mesesFat.map((mes, i) => {
+    const proj = getFatProjetado(i);
+    const real = fatReal[i] || null;
+    const varR = real !== null ? real - proj : null;
+    const varP = real !== null && proj > 0 ? (real - proj) / proj * 100 : null;
+    return { mes, proj, real, varR, varP };
+  });
+
+  let totalProj = 0, totalReal = 0, mesesComReal = 0;
+  rows.forEach(r => {
+    totalProj += r.proj;
+    if (r.real !== null) { totalReal += r.real; mesesComReal++; }
+  });
+
+  const totalVarR = mesesComReal > 0 ? totalReal - totalProj : null;
+  const totalVarP = mesesComReal > 0 && totalProj > 0 ? (totalReal - totalProj) / totalProj * 100 : null;
+  const atingiu   = rows.filter(r => r.real !== null && r.varR >= 0).length;
+
+  // Atualiza variação em cada linha sem recriar o input
+  rows.forEach((r, i) => {
+    const varEl = document.getElementById('fat-var-' + i);
+    const lfEl  = document.getElementById('fat-lf-' + i);
+    if (varEl) {
+      varEl.className = 'fat-var ' + (r.varP === null ? 'zero' : r.varP >= 0 ? 'pos' : 'neg');
+      varEl.textContent = r.varP !== null ? (r.varP >= 0 ? '+' : '') + r.varP.toFixed(1) + '%' : '—';
+    }
+    if (lfEl && r.real !== null) {
+      function gi2(id, def) { const e = document.getElementById(id); return e ? (parseFloat(e.value) || def) : def; }
+      const descPct   = gi2('s_desc',    5);
+      const impPct    = gi2('s_imp',     8);
+      const cmvPct    = gi2('s_cmv',     42.86);
+      const dpPct     = gi2('s_dp',      14);
+      const alugMin   = gi2('s_aluguel', 6366);
+      const alPct     = gi2('s_al_pct',  6);
+      const condMes   = gi2('s_cond',    1200);
+      const locMes    = gi2('s_locacao', 0);
+      const cartaoPct = gi2('s_cartao',  2.5);
+      const mktPct    = gi2('s_mkt',     2);
+      const odPct     = gi2('s_od',      8);
+      const rob = r.real * (1 - descPct/100);
+      const imp = rob * (impPct/100);
+      const cmv = rob * (cmvPct/100);
+      const lb  = rob - cmv;
+      const dp  = rob * (dpPct/100);
+      const cto = Math.max(alugMin, r.real * alPct/100) + condMes + locMes;
+      const od  = rob * (odPct/100);
+      const lf  = lb - imp - dp - cto - od - r.real*(cartaoPct/100) - r.real*(mktPct/100);
+      lfEl.style.color = lf >= 0 ? 'var(--green)' : '#e07070';
+      lfEl.textContent = 'LF: ' + fmtBRL(lf);
+    }
+  });
+
+  // Total
+  if (totalEl) totalEl.innerHTML = `
+    <div class="fat-row total-row">
+      <div class="fat-mes" style="color:#fff;grid-column:1/3">Total</div>
+      <div class="fat-proj" style="color:#fff;font-weight:600">${fmtBRL(totalProj)}</div>
+      <div class="fat-proj" style="color:#fff;font-weight:600">${mesesComReal > 0 ? fmtBRL(totalReal) : '—'}</div>
+      <div class="fat-var ${totalVarR === null ? 'zero' : totalVarR >= 0 ? 'pos' : 'neg'}">
+        ${totalVarR !== null ? (totalVarR >= 0 ? '+' : '') + fmtBRL(totalVarR) : '—'}
+      </div>
+      <div class="fat-var ${totalVarP === null ? 'zero' : totalVarP >= 0 ? 'pos' : 'neg'}">
+        ${totalVarP !== null ? (totalVarP >= 0 ? '+' : '') + totalVarP.toFixed(1) + '%' : '—'}
+      </div>
+    </div>`;
+
+  // KPIs
+  if (kpisEl) kpisEl.innerHTML = `
+    <div class="sim-kpi ${mesesComReal===0?'':'green'}">
+      <div class="sim-kpi-lbl">Fat. Real Acumulado</div>
+      <div class="sim-kpi-val">${mesesComReal > 0 ? fmtBRL(totalReal) : '—'}</div>
+    </div>
+    <div class="sim-kpi amber">
+      <div class="sim-kpi-lbl">Fat. Projetado Acumulado</div>
+      <div class="sim-kpi-val">${fmtBRL(totalProj)}</div>
+    </div>
+    <div class="sim-kpi ${totalVarP !== null && totalVarP >= 0 ? 'green' : ''}">
+      <div class="sim-kpi-lbl">Variação Acumulada</div>
+      <div class="sim-kpi-val ${totalVarP === null ? '' : totalVarP >= 0 ? 'pos' : 'neg'}">
+        ${totalVarP !== null ? (totalVarP >= 0 ? '+' : '') + totalVarP.toFixed(1) + '%' : '—'}
+      </div>
+    </div>
+    <div class="sim-kpi blue">
+      <div class="sim-kpi-lbl">Meses que Bateram Meta</div>
+      <div class="sim-kpi-val">${mesesComReal > 0 ? atingiu + ' / ' + mesesComReal : '—'}</div>
+    </div>`;
+
+  // Gráfico
+  if (chartEl) {
+    const maxVal = Math.max(...rows.map(r => Math.max(r.proj, r.real||0)), 1);
+    chartEl.innerHTML = `
+      <div style="background:var(--card);border-radius:12px;padding:16px 14px 8px">
+        <div style="display:flex;gap:4px;align-items:flex-end;height:80px">
+          ${rows.map(r => {
+            const hProj = Math.round(r.proj / maxVal * 70);
+            const hReal = r.real !== null ? Math.round(r.real / maxVal * 70) : 0;
+            return `<div style="flex:1;display:flex;gap:1px;align-items:flex-end;height:70px">
+              <div style="flex:1;height:${hProj}px;background:#3a3a3a;border-radius:2px 2px 0 0"></div>
+              <div style="flex:1;height:${hReal}px;background:${r.real===null?'transparent':r.varR>=0?'var(--green)':'#e07070'};border-radius:2px 2px 0 0"></div>
+            </div>`;
+          }).join('')}
+        </div>
+        <div style="display:flex;gap:4px;margin-top:4px">
+          ${rows.map(r=>`<div style="flex:1;font-size:0.5rem;color:var(--gray);text-align:center">${r.mes.replace('/26','').replace('/27','')}</div>`).join('')}
+        </div>
+        <div style="display:flex;gap:12px;margin-top:8px;justify-content:center">
+          <span style="font-size:0.6rem;color:var(--gray);display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;background:#3a3a3a;border-radius:1px;display:inline-block"></span>Projetado</span>
+          <span style="font-size:0.6rem;color:var(--gray);display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;background:var(--green);border-radius:1px;display:inline-block"></span>Real</span>
+        </div>
+      </div>`;
+  }
+}
+
+function renderFaturamento() {
+  const tableEl = document.getElementById('fatTable');
+  const totalEl = document.getElementById('fatTotalRow');
+  const kpisEl  = document.getElementById('fatKpis');
+  const chartEl = document.getElementById('fatChart');
+  if (!tableEl) return;
+
+  let totalProj = 0, totalReal = 0, mesesComReal = 0;
+  const rows = mesesFat.map((mes, i) => {
+    const proj = getFatProjetado(i);
+    const real = fatReal[i] || null;
+    const varR = real !== null ? real - proj : null;
+    const varP = real !== null && proj > 0 ? (real - proj) / proj * 100 : null;
+    totalProj += proj;
+    if (real !== null) { totalReal += real; mesesComReal++; }
+    return { mes, proj, real, varR, varP };
+  });
+
+  // Lê todos os inputs do simulador para DRE — compatível com Safari iOS
+  function getInput(id, def) {
+    const el = document.getElementById(id);
+    return el ? (parseFloat(el.value) || def) : def;
+  }
+  const descPct   = getInput('s_desc',    5);
+  const impPct    = getInput('s_imp',     8);
+  const cmvPct    = getInput('s_cmv',     42.86);
+  const dpPct     = getInput('s_dp',      14);
+  const alugMin   = getInput('s_aluguel', 6366);
+  const alPct     = getInput('s_al_pct',  6);
+  const condMes   = getInput('s_cond',    1200);
+  const locMes    = getInput('s_locacao', 0);
+  const cartaoPct = getInput('s_cartao',  2.5);
+  const mktPct    = getInput('s_mkt',     2);
+  const odPct     = getInput('s_od',      8);
+
+  function calcDRE(fat) {
+    const desc   = fat * (descPct/100);
+    const rob    = fat - desc;
+    const imp    = rob * (impPct/100);
+    const rol    = rob - imp;
+    const cmv    = rob * (cmvPct/100);
+    const lb     = rob - cmv;
+    const dp     = rob * (dpPct/100);
+    const alugEf = Math.max(alugMin, fat * alPct/100);
+    const cto    = alugEf + condMes + locMes;
+    const cartao = fat * (cartaoPct/100);
+    const mkt    = fat * (mktPct/100);
+    const od     = rob * (odPct/100);
+    const lf     = lb - imp - dp - cto - od - cartao - mkt;
+    return { fat, desc, rob, imp, rol, cmv, lb, dp, cto, cartao, mkt, od, lf };
+  }
+
+  function dreRowHtml(label, proj, real, isNeg=false, isHighlight=false, isSub=false) {
+    const cls = isHighlight ? 'highlight' : isSub ? 'subtotal' : '';
+    const realVal = real !== null ? (isNeg ? -real : real) : null;
+    const projVal = isNeg ? -proj : proj;
+    const realCls = real === null ? 'neu' : (isNeg ? real < 0 : real >= 0) ? 'pos' : 'neg';
+    return `<div class="fat-dre-row ${cls}">
+      <div class="fat-dre-label">${label}</div>
+      <div class="fat-dre-proj">${fmtBRL(projVal)}</div>
+      <div class="fat-dre-real ${real===null?'neu':isHighlight?(realVal>=0?'pos':'neg'):''}">${real !== null ? fmtBRL(realVal) : '—'}</div>
+    </div>`;
+  }
+
+  // Tabela com accordion
+  tableEl.innerHTML = rows.map((r, i) => {
+    const dreP = calcDRE(r.proj);
+    const dreR = r.real !== null ? calcDRE(r.real) : null;
+    const lfColor = r.real === null ? '' : dreR.lf >= 0 ? 'color:var(--green)' : 'color:#e07070';
+
+    return `
+    <div>
+      <div class="fat-accordion" onclick="toggleFatDRE(${i})">
+        <div class="fat-accordion-head">
+          <div style="display:flex;align-items:center;gap:10px">
+            <div class="fat-mes">${r.mes}</div>
+            ${r.real !== null ? `<div style="font-size:0.6rem;font-weight:600" id="fat-lf-${i}"></div>` : `<div id="fat-lf-${i}"></div>`}
+          </div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <div style="text-align:right">
+              <div class="fat-proj">${fmtBRL(r.proj)}</div>
+              <input class="fat-real-input" style="width:100px"
+                id="fat-input-${i}"
+                placeholder="0,00"
+                value="${r.real !== null ? r.real.toLocaleString('pt-BR',{minimumFractionDigits:0,maximumFractionDigits:0}) : ''}"
+                oninput="updateFatReal(${i}, this.value)"
+                onblur="updateFatReal(${i}, this.value)"
+                onclick="event.stopPropagation()"
+                onkeydown="if(event.key==='Enter'){this.blur()}">
+            </div>
+            <div class="fat-var" id="fat-var-${i}" style="min-width:46px;text-align:right">
+              ${r.varP !== null ? (r.varP>=0?'+':'')+r.varP.toFixed(1)+'%' : '—'}
+            </div>
+            <div class="fat-accordion-arrow" id="arrow-${i}">▼</div>
+          </div>
+        </div>
+      </div>
+      <div class="fat-dre-wrap" id="dre-${i}">
+      </div>
+    </div>`; 
+  }).join('');
+
+  // Atualiza KPIs, gráfico, total e variações
+  renderFatSummary();
+}
+
+function renderFluxo() {
+  // Sempre reconstrói o cashflow com os valores atuais dos investimentos
+  buildCashflow();
+}
+</script>
+</div><!-- end panelChecklist -->
+
+
+
+
+<div id="panelPlano" style="display:none; padding-bottom:60px">
+
+<div class="section-label">INPUTS</div>
+  <div style="padding: 0 20px;">
+
+    <div class="sim-group">
+      <div class="sim-row">
+        <div class="sim-label">Faturamento — Venda Mês Ano 1 <span class="sim-unit">R$ mil</span></div>
+        <input class="sim-input" id="s_venda" type="number" value="120" step="1" oninput="calcSim()">
+      </div>
+      <div class="sim-row">
+        <div class="sim-label">Faturamento — Crescimento Anual <span class="sim-unit">%</span></div>
+        <input class="sim-input" id="s_cresc" type="number" value="10" step="1" oninput="calcSim()">
+      </div>
+      <div class="sim-row">
+        <div class="sim-label">Desconto <span class="sim-unit">% Fat.</span></div>
+        <input class="sim-input" id="s_desc" type="number" value="5" step="0.5" oninput="calcSim()">
+      </div>
+      <div class="sim-row" style="background:#1e1e1e">
+        <div class="sim-label" style="color:#fff;font-weight:600">ROB <span class="sim-unit">Receita Op. Bruta</span></div>
+        <div id="s_rob_val" style="font-family:'Bebas Neue',sans-serif;font-size:1rem;color:#fff;letter-spacing:1px;min-width:90px;text-align:right">—</div>
+      </div>
+      <div class="sim-row">
+        <div class="sim-label">Imposto (Simples) <span class="sim-unit">% ROB</span></div>
+        <input class="sim-input" id="s_imp" type="number" value="8" step="0.5" oninput="calcSim()">
+      </div>
+      <div class="sim-row" style="background:#1e1e1e">
+        <div class="sim-label" style="color:#fff;font-weight:600">ROL <span class="sim-unit">Receita Op. Líquida</span></div>
+        <div id="s_rol_val" style="font-family:'Bebas Neue',sans-serif;font-size:1rem;color:#fff;letter-spacing:1px;min-width:90px;text-align:right">—</div>
+      </div>
+      <div class="sim-row">
+        <div class="sim-label">CMV <span class="sim-unit">% ROB</span></div>
+        <input class="sim-input" id="s_cmv" type="number" value="42.86" step="1" oninput="calcSim()">
+      </div>
+      <div class="sim-row">
+        <div class="sim-label">DP — Despesas Pessoal <span class="sim-unit">% ROB</span></div>
+        <input class="sim-input" id="s_dp" type="number" value="14" step="0.5" oninput="calcSim()">
+      </div>
+      <div class="sim-row" style="background:#1e1e1e">
+        <div class="sim-label" style="color:#fff;font-weight:600">CTO Total <span class="sim-unit">% Fat.</span></div>
+        <div id="s_cto_total" style="font-family:'Bebas Neue',sans-serif;font-size:1rem;color:var(--amber);letter-spacing:1px;min-width:60px;text-align:right">—</div>
+      </div>
+      <div class="sim-row" style="padding-left:28px">
+        <div class="sim-label">↳ Aluguel Mínimo Mês <span class="sim-unit">R$</span></div>
+        <input class="sim-input" id="s_aluguel" type="number" value="6365.80" step="100" oninput="calcSim()">
+      </div>
+      <div class="sim-row" style="padding-left:28px">
+        <div class="sim-label">↳ Aluguel % Faturamento <span class="sim-unit">%</span></div>
+        <input class="sim-input" id="s_al_pct" type="number" value="6" step="0.5" oninput="calcSim()">
+      </div>
+      <div class="sim-row" style="padding-left:28px">
+        <div class="sim-label">↳ Condomínio / Encargos Mês <span class="sim-unit">R$</span></div>
+        <input class="sim-input" id="s_cond" type="number" value="1200" step="100" oninput="calcSim()">
+      </div>
+      <div class="sim-row" style="padding-left:28px">
+        <div class="sim-label">↳ Outras Desp. Locação Mês <span class="sim-unit">R$</span></div>
+        <input class="sim-input" id="s_locacao" type="number" value="0" step="100" oninput="calcSim()">
+      </div>
+      <div class="sim-row">
+        <div class="sim-label">OD — Outras Despesas <span class="sim-unit">% ROB</span></div>
+        <input class="sim-input" id="s_od" type="number" value="8" step="0.5" oninput="calcSim()">
+      </div>
+      <div class="sim-row">
+        <div class="sim-label">Taxa de Cartão <span class="sim-unit">% Fat.</span></div>
+        <input class="sim-input" id="s_cartao" type="number" value="2.5" step="0.5" oninput="calcSim()">
+      </div>
+      <div class="sim-row">
+        <div class="sim-label">Marketing <span class="sim-unit">% Fat.</span></div>
+        <input class="sim-input" id="s_mkt" type="number" value="2" step="0.5" oninput="calcSim()">
+      </div>
+      <div class="sim-row" style="background:#1c2a1c">
+        <div class="sim-label" style="color:#fff;font-weight:600">LF <span class="sim-unit">Lucro Final Ano 1</span></div>
+        <div id="s_lf_val" style="font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:1px;min-width:90px;text-align:right">—</div>
+      </div>
+      <div class="sim-row">
+        <div class="sim-label">Investimento Total <span class="sim-unit">R$ mil</span></div>
+        <input class="sim-input" id="s_inv" type="number" value="400" step="10" oninput="calcSim()">
+      </div>
+      <div class="sim-row">
+        <div class="sim-label">SELIC <span class="sim-unit">% a.a.</span></div>
+        <input class="sim-input" id="s_selic" type="number" value="15" step="0.5" oninput="calcSim()">
+      </div>
+    </div>
+
+  </div>
+
+  <div class="section-label">PROJEÇÃO 5 ANOS</div>
+  <div style="padding: 0 20px;">
+    <div class="sim-dre-wrap" id="simDRE"></div>
+  </div>
+
+  <div class="section-label">RESULTADO</div>
+  <div style="padding: 0 20px;">
+    <div class="sim-result-grid" id="simResult"></div>
+  </div>
+
+  <div class="section-label">SAZONALIDADE MENSAL</div>
+<div class="section-label">FATURAMENTO BASE</div>
+  <div class="sazon-wrap">
+    <div class="sazon-fat-row">
+      <div>
+        <div class="sazon-fat-label">Faturamento Anual Base <span style="font-size:0.62rem;color:var(--gray)">(do Simulador — Ano 1)</span></div>
+        <div style="font-size:0.65rem;color:var(--gray);margin-top:2px">Altere a venda mês na aba Simul. para atualizar</div>
+      </div>
+      <div class="sazon-fat-val" id="sazonFatBase">R$ —</div>
+    </div>
+
+    <div class="sazon-total-row">
+      <div class="sazon-total-label">Soma dos % mensais</div>
+      <div class="sazon-total-val" id="sazonTotalPct">—</div>
+    </div>
+  </div>
+
+  <div class="section-label">PERCENTUAL POR MÊS</div>
+  <div class="sazon-wrap">
+    <div class="sazon-grid" id="sazonGrid"></div>
+  </div>
+
+  <div class="section-label">PROJEÇÃO ANUAL COM SAZONALIDADE</div>
+  <div class="sazon-wrap">
+    <div class="sazon-anual-wrap" id="sazonAnual"></div>
+  </div>
+
+  <div class="section-label">CUSTO DE OPORTUNIDADE (SELIC)</div>
+  <div style="padding:0 20px">
+    <div class="sim-selic-wrap">
+      <div class="sim-selic-title">Investimento corrigido vs Retorno acumulado</div>
+      <div class="sim-selic-table" id="simSelic"></div>
+    </div>
+  </div>
+
+  <div style="display:flex; align-items:center; justify-content:space-between; padding: 0 20px; margin-top:16px; margin-bottom:4px">
+    <div style="font-size:0.62rem; letter-spacing:3px; text-transform:uppercase; color:var(--gray)">INVESTIMENTOS</div>
+    <div style="display:flex; align-items:baseline; gap:6px">
+      <span style="font-size:0.58rem; letter-spacing:1px; text-transform:uppercase; color:var(--gray)">Total</span>
+      <span id="invTotalInline" style="font-family:'Bebas Neue',sans-serif; font-size:1.1rem; color:var(--amber); letter-spacing:1px">R$ —</span>
+    </div>
+  </div>
+  <div class="fin-section">
+    <div class="fin-table-wrap" id="fornTable"></div>
+  </div>
+
+</div>
+<div id="panelFluxo" style="display:none; padding-bottom:60px">
+
+  <div class="section-label">SAÍDAS PREVISTAS — MÊS A MÊS</div>
+  <div class="cf-bar-wrap" id="cashflow" style="padding:0 20px"></div>
+
+</div>
+<div id="panelCmv" style="display:none; padding-bottom:60px">
+
+  <div class="section-label">PARÂMETROS</div>
+  <div style="padding:0 20px">
+    <div class="cmv-params">
+      <div class="cmv-param-row">
+        <div class="cmv-param-label">CMV <span class="cmv-param-unit">% ROB (do Simulador)</span></div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:1rem;color:var(--amber);letter-spacing:1px" id="cmvPctDisplay">—</div>
+      </div>
+      <div class="cmv-param-row">
+        <div class="cmv-param-label">Preço Médio de Custo/Par <span class="cmv-param-unit">R$</span></div>
+        <input class="cmv-param-input" id="cmvPrecoPar" type="number" value="" placeholder="—" step="10" min="0" oninput="renderCMV(); buildCashflow();">
+      </div>
+      <div class="cmv-param-row">
+        <div class="cmv-param-label">Giro de Estoque <span class="cmv-param-unit">X para 1</span></div>
+        <input class="cmv-param-input" id="cmvGiro" type="number" value="3" step="0.5" min="1" oninput="renderCMV(); buildCashflow();">
+      </div>
+      <div class="cmv-param-row">
+        <div class="cmv-param-label">Prazo Parcela 1 <span class="cmv-param-unit">dias</span></div>
+        <input class="cmv-param-input" id="cmvP1" type="number" value="30" step="30" min="30" oninput="renderCMV(); buildCashflow();">
+      </div>
+      <div class="cmv-param-row">
+        <div class="cmv-param-label">Prazo Parcela 2 <span class="cmv-param-unit">dias</span></div>
+        <input class="cmv-param-input" id="cmvP2" type="number" value="60" step="30" min="30" oninput="renderCMV(); buildCashflow();">
+      </div>
+      <div class="cmv-param-row">
+        <div class="cmv-param-label">Prazo Parcela 3 <span class="cmv-param-unit">dias</span></div>
+        <input class="cmv-param-input" id="cmvP3" type="number" value="90" step="30" min="30" oninput="renderCMV(); buildCashflow();">
+      </div>
+      <div class="cmv-param-row" style="background:rgba(217,119,6,0.05);border-left:2px solid var(--amber)">
+        <div class="cmv-param-label">Prazo Parcela 4 <span class="cmv-param-unit">dias · só pedido inaugural</span></div>
+        <input class="cmv-param-input" id="cmvP4" type="number" value="120" step="30" min="30" oninput="renderCMV(); buildCashflow();">
+      </div>
+    </div>
+  </div>
+
+  <div class="section-label">VISÃO GERAL — DESEMBOLSO POR MÊS</div>
+  <div style="padding:0 20px" id="cmvTimeline"></div>
+
+  <div class="section-label">REAL × PROJETADO — COMPRAS MÊS A MÊS</div>
+  <div style="padding:0 20px">
+    <div style="background:var(--card);border-radius:12px;overflow:hidden;margin-bottom:8px">
+      <div class="fat-header-row" style="grid-template-columns:80px repeat(4,1fr)">
+        <div>Mês</div>
+        <div style="text-align:right">Projetado</div>
+        <div style="text-align:right">Real</div>
+        <div style="text-align:right">Var. R$</div>
+        <div style="text-align:right">Var. %</div>
+      </div>
+      <div id="cmvRealTable"></div>
+    </div>
+  </div>
+
+  <div class="section-label">DETALHE MÊS A MÊS</div>
+  <div style="padding:0 20px" id="cmvCards"></div>
+
+</div>
+
+
+
+<div id="panelDre" style="display:none; padding-bottom:60px">
+
+  <div class="section-label">FATURAMENTO REAL × PROJETADO</div>
+<div class="section-label">RESUMO</div>
+  <div style="padding:0 20px">
+    <div class="fat-kpi-grid" id="fatKpis"></div>
+  </div>
+
+  <div class="section-label">GRÁFICO — PROJETADO VS REAL</div>
+  <div style="padding:0 20px" id="fatChart"></div>
+
+  <div class="section-label">REAL × PROJETADO — MÊS A MÊS</div>
+  <div style="padding:0 20px">
+    <div style="background:var(--card);border-radius:12px;overflow:hidden">
+      <div class="fat-header-row">
+        <div>Mês</div>
+        <div style="text-align:right">Projetado</div>
+        <div style="text-align:right">Real</div>
+        <div style="text-align:right">Var. R$</div>
+        <div style="text-align:right">Var. %</div>
+      </div>
+      <div id="fatTable"></div>
+      <div id="fatTotalRow"></div>
+    </div>
+  </div>
+
+
+
+  <div class="section-label">VISÃO</div>
+  <div class="dre-toggle">
+    <button class="dre-toggle-btn active" id="dreBtn3" onclick="setDreView('trimestral')">Trimestral</button>
+    <button class="dre-toggle-btn" id="dreBtn12" onclick="setDreView('mensal')">Mensal</button>
+    <button class="dre-toggle-btn" id="dreBtnAno" onclick="setDreView('anual')">Anual</button>
+  </div>
+
+  <div class="section-label">INDICADORES</div>
+  <div style="padding:0 20px">
+    <div class="sim-result-grid" id="dreKpis"></div>
+  </div>
+
+  <div class="section-label">DRE <span id="dreTitulo" style="font-weight:400;text-transform:none;letter-spacing:0;font-size:0.7rem;color:var(--gray)">— Projetado vs Real</span></div>
+  <div style="padding:0 20px;overflow-x:auto">
+    <div id="dreTable"></div>
+  </div>
+
+  <div class="section-label">EVOLUÇÃO DO LUCRO FINAL</div>
+  <div style="padding:0 20px" id="dreChart"></div>
+
+</div>
+
+<div id="panelDocumentos" style="display:none; padding-bottom:60px">
+  <div class="section-label">📋 CONTRATO — RESUMO</div>
+  <div style="padding:0 20px">
+    <div class="doc-card" style="margin-bottom:6px">
+      <div class="doc-info">
+        <div class="doc-name" style="color:#ccc">EUC 259 · 45,47m² · Térreo</div>
+        <div class="doc-meta">Tivoli Shopping</div>
+      </div>
+    </div>
+    <div class="doc-card" style="margin-bottom:6px">
+      <div class="doc-info">
+        <div class="doc-name" style="color:#ccc">Aluguel mínimo R$ 6.365,80/mês</div>
+        <div class="doc-meta">IPCA anual · base Abr/2026</div>
+      </div>
+    </div>
+    <div class="doc-card" style="margin-bottom:6px">
+      <div class="doc-info">
+        <div class="doc-name" style="color:#ccc">Aluguel percentual 6%</div>
+        <div class="doc-meta">6% do faturamento bruto mensal</div>
+      </div>
+    </div>
+    <div class="doc-card" style="margin-bottom:6px">
+      <div class="doc-info">
+        <div class="doc-name" style="color:#ccc">Carência total até 24/Jul/2026</div>
+        <div class="doc-meta">Aluguel + Encargos + Fundo isentos</div>
+      </div>
+    </div>
+    <div class="doc-card" style="margin-bottom:6px">
+      <div class="doc-info">
+        <div class="doc-name" style="color:#ccc">Vigência 60 meses</div>
+        <div class="doc-meta">11 Mai 2026 → 10 Mai 2031</div>
+      </div>
+    </div>
+    <div class="doc-card" style="margin-bottom:6px">
+      <div class="doc-info">
+        <div class="doc-name" style="color:#ccc">Dez/2026 isento do dobro</div>
+        <div class="doc-meta">Isenção da Cláusula 92ª exclusivamente para 2026</div>
+      </div>
+    </div>
+    <div class="doc-card" style="margin-bottom:6px">
+      <div class="doc-info">
+        <div class="doc-name" style="color:#ccc">Mídia inaugural R$ 15.000</div>
+        <div class="doc-meta">10× R$ 1.500 a partir 25/Jul · Crédito merchandising Tivoli (90 dias)</div>
+      </div>
+    </div>
+    <div class="doc-card" style="margin-bottom:6px">
+      <div class="doc-info">
+        <div class="doc-name" style="color:#ccc">Fiador: Breno Cintra Pugliesi</div>
+        <div class="doc-meta">Devedor solidário</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-label">💰 VENCIMENTOS</div>
+  <div style="padding:0 20px">
+    <div class="doc-card" style="margin-bottom:6px">
+      <div class="doc-info">
+        <div class="doc-name" style="color:#e07070">⚠️ Encargos específicos desde Abr/2026</div>
+        <div class="doc-meta">Sem carência · pagar desde abril</div>
+      </div>
+    </div>
+    <div class="doc-card" style="margin-bottom:6px">
+      <div class="doc-info">
+        <div class="doc-name" style="color:#ccc">Dia 05 — Aluguel Mínimo</div>
+        <div class="doc-meta">R$ 6.365,80 · mês subsequente (Item XIV)</div>
+      </div>
+    </div>
+    <div class="doc-card" style="margin-bottom:6px">
+      <div class="doc-info">
+        <div class="doc-name" style="color:#ccc">Dia 05 — Encargos Comuns</div>
+        <div class="doc-meta">CRD 47,52 · mês de competência (Item XVI)</div>
+      </div>
+    </div>
+    <div class="doc-card" style="margin-bottom:6px">
+      <div class="doc-info">
+        <div class="doc-name" style="color:#ccc">Dia 05 — Fundo de Promoção</div>
+        <div class="doc-meta">Mês de competência (Item XVI)</div>
+      </div>
+    </div>
+    <div class="doc-card" style="margin-bottom:6px">
+      <div class="doc-info">
+        <div class="doc-name" style="color:#ccc">Dia 05 — Despesas específicas</div>
+        <div class="doc-meta">IPTU, energia, água (Item XIII)</div>
+      </div>
+    </div>
+    <div class="doc-card" style="margin-bottom:6px">
+      <div class="doc-info">
+        <div class="doc-name" style="color:#ccc">Dia 15 — Aluguel Percentual</div>
+        <div class="doc-meta">6% fat. bruto · mês subsequente (Item XV)</div>
+      </div>
+    </div>
+    <div class="doc-card" style="margin-bottom:6px">
+      <div class="doc-info">
+        <div class="doc-name" style="color:#ccc">Dia 25 — Mídia inaugural</div>
+        <div class="doc-meta">R$ 1.500 · 10 parcelas (Cl. XVIII.3) · Jul–Abr</div>
+      </div>
+    </div>
+    <div class="doc-card" style="margin-bottom:6px">
+      <div class="doc-info">
+        <div class="doc-name" style="color:#e07070">⚠️ Dezembro (a partir 2027)</div>
+        <div class="doc-meta">Aluguel DOBRADO · isenção só em 2026 (Cl. 5.8)</div>
+      </div>
+    </div>
+    <div class="doc-card" style="margin-bottom:6px">
+      <div class="doc-info">
+        <div class="doc-name" style="color:#ccc">30 Abril — Atualização cadastral</div>
+        <div class="doc-meta">Locatário + Fiador (Cl. 15.7) · anual</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-label">🚨 RISCOS E ALERTAS</div>
+  <div style="padding:0 20px">
+    <div class="doc-card" style="margin-bottom:6px">
+      <div class="doc-info">
+        <div class="doc-name" style="color:#ccc">Multa rescisória ~R$ 38k</div>
+        <div class="doc-meta">6× aluguel mínimo · Cresce com IPCA · Vale para Fiador (Cl. 14.3)</div>
+      </div>
+    </div>
+    <div class="doc-card" style="margin-bottom:6px">
+      <div class="doc-info">
+        <div class="doc-name" style="color:#e07070">Normas Gerais e Regimento</div>
+        <div class="doc-meta">Inadimplência = rescisão automática de TODOS os contratos (Cl. 1.1)</div>
+      </div>
+    </div>
+    <div class="doc-card" style="margin-bottom:6px">
+      <div class="doc-info">
+        <div class="doc-name" style="color:#ccc">Reajuste tributário automático</div>
+        <div class="doc-meta">Se carga tributária subir, aluguel sobe junto sem negociação (Cl. 7.4)</div>
+      </div>
+    </div>
+    <div class="doc-card" style="margin-bottom:6px">
+      <div class="doc-info">
+        <div class="doc-name" style="color:#ccc">Auditoria de faturamento</div>
+        <div class="doc-meta">Shopping pode auditar com 3 dias de aviso · Divergência >20% = custo + sanções (Cl. 5.5)</div>
+      </div>
+    </div>
+    <div class="doc-card" style="margin-bottom:6px">
+      <div class="doc-info">
+        <div class="doc-name" style="color:#ccc">Foro: Santa Bárbara d'Oeste</div>
+        <div class="doc-meta">Litígios apenas nesta comarca (Cl. 25)</div>
+      </div>
+    </div>
+    <div class="doc-card" style="margin-bottom:6px">
+      <div class="doc-info">
+        <div class="doc-name" style="color:#ccc">Fiador: patrimônio livre</div>
+        <div class="doc-meta">Breno deve manter patrimônio livre durante toda a vigência (Cl. 15.4)</div>
+      </div>
+    </div>
+    <div class="doc-card" style="margin-bottom:6px">
+      <div class="doc-info">
+        <div class="doc-name" style="color:#ccc">Análise de projetos tem custo</div>
+        <div class="doc-meta">Lojista paga pela análise de cada disciplina · Solicitar tabela ao Dep. Técnico</div>
+      </div>
+    </div>
+    <div class="doc-card" style="margin-bottom:6px">
+      <div class="doc-info">
+        <div class="doc-name" style="color:#e07070">Obra pode ser embargada</div>
+        <div class="doc-meta">Descumprimento de ordens do Comitê Técnico resulta em embargo imediato</div>
+      </div>
+    </div>
+    <div class="doc-card" style="margin-bottom:6px">
+      <div class="doc-info">
+        <div class="doc-name" style="color:#ccc">Energia: sem tensão 110V</div>
+        <div class="doc-meta">Sistema é 380V trifásico / 220V monofásico — verificar compatibilidade dos equipamentos</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-label">📞 CONTATOS</div>
+  <div style="padding:0 20px">
+    <div class="doc-card" style="margin-bottom:6px">
+      <div class="doc-info">
+        <div class="doc-name" style="color:#ccc">Diego Dias — Operações/Obras</div>
+        <div class="doc-meta">(19) 97405-9183 · diego@tivolishopping.com.br</div>
+      </div>
+    </div>
+    <div class="doc-card" style="margin-bottom:6px">
+      <div class="doc-info">
+        <div class="doc-name" style="color:#ccc">Leandra Marostegan — Comercial</div>
+        <div class="doc-meta">(19) 98197-9907 · leandra@admall.com.br</div>
+      </div>
+    </div>
+    <div class="doc-card" style="margin-bottom:6px">
+      <div class="doc-info">
+        <div class="doc-name" style="color:#ccc">Núbia Castro — Gerente Geral</div>
+        <div class="doc-meta">(19) 3457-9966 · nubia.castro@tivolishopping.com.br</div>
+      </div>
+    </div>
+    <div class="doc-card" style="margin-bottom:6px">
+      <div class="doc-info">
+        <div class="doc-name" style="color:#ccc">Diego Fumes — Financeiro</div>
+        <div class="doc-meta">(19) 3457-9966 · oliveira@tivolishopping.com.br</div>
+      </div>
+    </div>
+    <div class="doc-card" style="margin-bottom:6px">
+      <div class="doc-info">
+        <div class="doc-name" style="color:#ccc">Cintia — Faturamento</div>
+        <div class="doc-meta">cintia@tivolishopping.com.br</div>
+      </div>
+    </div>
+    <div class="doc-card" style="margin-bottom:6px">
+      <div class="doc-info">
+        <div class="doc-name" style="color:#ccc">Claudia — Contratos/Decl. Vendas</div>
+        <div class="doc-meta">claudia@tivolishopping.com.br</div>
+      </div>
+    </div>
+    <div class="doc-card" style="margin-bottom:6px">
+      <div class="doc-info">
+        <div class="doc-name" style="color:#ccc">Tiago — Auditoria</div>
+        <div class="doc-meta">auditoria@tivolishopping.com.br</div>
+      </div>
+    </div>
+    <div class="doc-card" style="margin-bottom:6px">
+      <div class="doc-info">
+        <div class="doc-name" style="color:#ccc">Paula Funichello — Marketing</div>
+        <div class="doc-meta">(19) 3457-9966 · paula@tivolishopping.com.br</div>
+      </div>
+    </div>
+    <div class="doc-card" style="margin-bottom:6px">
+      <div class="doc-info">
+        <div class="doc-name" style="color:#ccc">Matheus — Merchandising/Mídia</div>
+        <div class="doc-meta">(19) 99299-9640 · matheus@admall.com.br</div>
+      </div>
+    </div>
+    <div class="doc-card" style="margin-bottom:6px">
+      <div class="doc-info">
+        <div class="doc-name" style="color:#ccc">Ailon Polchachi — Segurança</div>
+        <div class="doc-meta">(19) 3457-9966 · ailon.polchachi@tivolishopping.com.br</div>
+      </div>
+    </div>
+    <div class="doc-card" style="margin-bottom:6px">
+      <div class="doc-info">
+        <div class="doc-name" style="color:#ccc">Portal do Lojista</div>
+        <div class="doc-meta">https://ad.madnezz.com.br/auth/login</div>
+      </div>
+    </div>
+    <div class="doc-card" style="margin-bottom:6px">
+      <div class="doc-info">
+        <div class="doc-name" style="color:#ccc">WhatsApp Comunicados Tivoli</div>
+        <div class="doc-meta">(19) 98417-5852 · enviar 'Oi' para entrar na lista</div>
+      </div>
+    </div>
+    <div class="doc-card" style="margin-bottom:6px">
+      <div class="doc-info">
+        <div class="doc-name" style="color:#ccc">Vend.Aí — Plataforma online</div>
+        <div class="doc-meta">(19) 99996-3732 · cadastro para venda via WhatsApp</div>
+      </div>
+    </div>
+  </div>
+
+
+<div class="section-label">DOCUMENTOS COMPARTILHADOS</div>
+  <div style="padding: 0 20px;">
+
+    <!-- CONTRATO -->
+    <div class="doc-group-title">📋 Contrato de Locação</div>
+
+    <div class="doc-card">
+      <div class="doc-icon">📄</div>
+      <div class="doc-info">
+        <div class="doc-name">Contrato de Locação — EUC 259</div>
+        <div class="doc-meta">Tivoli Shopping · 60 meses · 11/mai/2026–10/mai/2031</div>
+        <div class="doc-tags">
+          <span class="doc-tag red">Assinar</span>
+          <span class="doc-tag">Locação</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="doc-card">
+      <div class="doc-icon">📊</div>
+      <div class="doc-info">
+        <div class="doc-name">Resumo do Contrato — Condições Confirmadas</div>
+        <div class="doc-meta">Aluguel R$6.365,80 · Carência até 24/jul/2026 · Fiador Breno · Mídia R$15k</div>
+        <div class="doc-tags">
+          <span class="doc-tag green">Confirmado</span>
+          <span class="doc-tag">Resumo</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- CADERNO TÉCNICO -->
+    <div class="doc-group-title">🏗 Caderno Técnico</div>
+
+    <div class="doc-card">
+      <div class="doc-icon">📐</div>
+      <div class="doc-info">
+        <div class="doc-name">Caderno Técnico Tivoli — rev00/2017</div>
+        <div class="doc-meta">Normas para elaboração de projetos e obras · 34 páginas</div>
+        <div class="doc-tags">
+          <span class="doc-tag amber">Obra</span>
+          <span class="doc-tag">Projetos</span>
+          <span class="doc-tag">Instalações</span>
+        </div>
+        <div class="doc-highlights">
+          <div class="doc-hl">· Projetos obrigatórios: arq., estrutural, elétrico, AC, hidro, incêndio + ARTs</div>
+          <div class="doc-hl">· Envio por e-mail DWG + PDF · Comitê tem 7 dias úteis para aprovação</div>
+          <div class="doc-hl">· Tapume branco padrão · avanço 0,65m · sem fixação no piso</div>
+          <div class="doc-hl">· Obras seg–sáb 7h–22h · barulho excessivo somente 22h–7h</div>
+          <div class="doc-hl">· Somente lâmpadas LED · eletrodutos metálicos obrigatórios</div>
+          <div class="doc-hl">· Vidros temperados 10mm · porta mín. 2,20m altura × 1,00m largura</div>
+          <div class="doc-hl">· Vistoria final: solicitar 5 dias antes com Modelo C</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- WELCOME KIT -->
+    <div class="doc-group-title">🛍 Welcome Kit — Tivoli Shopping</div>
+
+    <div class="doc-card">
+      <div class="doc-icon">👋</div>
+      <div class="doc-info">
+        <div class="doc-name">Bem-vindo ao Tivoli Shopping</div>
+        <div class="doc-meta">Guia operacional para lojistas · Procedimentos e contatos</div>
+        <div class="doc-tags">
+          <span class="doc-tag green">Operação</span>
+          <span class="doc-tag">Referência</span>
+        </div>
+        <div class="doc-highlights">
+          <div class="doc-hl">· Horário lojas: seg–sáb 10h–22h · dom/fer 14h–20h</div>
+          <div class="doc-hl">· Portal do Lojista: ad.madnezz.com.br/auth/login</div>
+          <div class="doc-hl">· Declaração de vendas: diária pelo portal até 17h</div>
+          <div class="doc-hl">· Carga/descarga: 06h–23h59 · carrinhos com restrição de horário</div>
+          <div class="doc-hl">· WhatsApp comunicados: (19) 98417-5852</div>
+          <div class="doc-hl">· Vend.Aí (vendas online): (19) 99996-3732</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FORNECEDORES -->
+    <div class="doc-group-title">🛒 Tabela de Fornecedores</div>
+
+    <div class="doc-card">
+      <div class="doc-icon">📋</div>
+      <div class="doc-info">
+        <div class="doc-name">Fornecedores — Contatos e Condições</div>
+        <div class="doc-meta">11 fornecedores mapeados · condições de pagamento negociadas</div>
+        <div class="doc-tags">
+          <span class="doc-tag amber">Negociação</span>
+        </div>
+        <div class="doc-forn-table">
+          <div class="doc-forn-row"><span class="dfn">Mobília</span><span class="dfc">Luciano · 16 98191-3800</span><span class="dfd">3 parcelas</span></div>
+          <div class="doc-forn-row"><span class="dfn">Prateleiras</span><span class="dfc">Telamarck · 16 98191-3800</span><span class="dfd">2x · 1ª na assinatura</span></div>
+          <div class="doc-forn-row"><span class="dfn">Execução</span><span class="dfc">Paulo · 19 99774-8000</span><span class="dfd">3x · 1ª em 27/mai</span></div>
+          <div class="doc-forn-row"><span class="dfn">Couro</span><span class="dfc">Fernanda · 16 98832-9230</span><span class="dfd">1x · 15d após fat.</span></div>
+          <div class="doc-forn-row"><span class="dfn">Paredes</span><span class="dfc">Luciana · 16 99146-9901</span><span class="dfd">3x cartão/PIX -10%</span></div>
+          <div class="doc-forn-row"><span class="dfn">Sideral</span><span class="dfc">Giuliano · 16 99159-5511</span><span class="dfd">1x · 30d ou à vista</span></div>
+          <div class="doc-forn-row"><span class="dfn">Frandias</span><span class="dfc">Fransergio · 16 98833-7563</span><span class="dfd">2x · 1ª na assinatura</span></div>
+          <div class="doc-forn-row"><span class="dfn">Luminotécnico</span><span class="dfc">Soninha · 16 99165-1002</span><span class="dfd">3 parcelas</span></div>
+          <div class="doc-forn-row"><span class="dfn">Tapete</span><span class="dfc">Rose · 11 98432-8682</span><span class="dfd">A negociar</span></div>
+          <div class="doc-forn-row"><span class="dfn">Portobello</span><span class="dfc">Marina · 16 99211-0209</span><span class="dfd">Boleto 28d após fat.</span></div>
+          <div class="doc-forn-row"><span class="dfn">Frete</span><span class="dfc">M Sul Transportes</span><span class="dfd">Boleto 21d após coleta</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CONTATOS -->
+    <div class="doc-group-title">📞 Contatos do Shopping</div>
+
+    <div class="doc-card">
+      <div class="doc-icon">🏢</div>
+      <div class="doc-info">
+        <div class="doc-name">Equipe Tivoli Shopping — Todos os Contatos</div>
+        <div class="doc-meta">Administração · Operações · Financeiro · Marketing · Segurança</div>
+        <div class="doc-forn-table">
+          <div class="doc-forn-row"><span class="dfn">Diego Dias</span><span class="dfc">Operações/Obras</span><span class="dfd">(19) 97405-9183</span></div>
+          <div class="doc-forn-row"><span class="dfn">Leandra Marostegan</span><span class="dfc">Comercial</span><span class="dfd">(19) 98197-9907</span></div>
+          <div class="doc-forn-row"><span class="dfn">Núbia Castro</span><span class="dfc">Gerente Geral</span><span class="dfd">(19) 3457-9966</span></div>
+          <div class="doc-forn-row"><span class="dfn">Diego Fumes</span><span class="dfc">Financeiro</span><span class="dfd">oliveira@tivolishopping.com.br</span></div>
+          <div class="doc-forn-row"><span class="dfn">Cintia</span><span class="dfc">Faturamento</span><span class="dfd">cintia@tivolishopping.com.br</span></div>
+          <div class="doc-forn-row"><span class="dfn">Claudia</span><span class="dfc">Contratos/Vendas</span><span class="dfd">claudia@tivolishopping.com.br</span></div>
+          <div class="doc-forn-row"><span class="dfn">Paula Funichello</span><span class="dfc">Marketing</span><span class="dfd">paula@tivolishopping.com.br</span></div>
+          <div class="doc-forn-row"><span class="dfn">Matheus</span><span class="dfc">Merchandising</span><span class="dfd">(19) 99299-9640</span></div>
+          <div class="doc-forn-row"><span class="dfn">Ailon Polchachi</span><span class="dfc">Segurança</span><span class="dfd">ailon.polchachi@tivolishopping.com.br</span></div>
+          <div class="doc-forn-row"><span class="dfn">Tiago</span><span class="dfc">Auditoria</span><span class="dfd">auditoria@tivolishopping.com.br</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FOTOS -->
+    <div class="doc-group-title">📸 Fotos da Loja — EUC 259</div>
+    <div class="doc-card">
+      <div class="doc-icon">🏪</div>
+      <div class="doc-info">
+        <div class="doc-name">Imagens da Loja e do Shopping</div>
+        <div class="doc-meta">Tivoli Shopping · Corredor · Fachada EUC 259 · Usaflex ao lado</div>
+        <div class="doc-tags">
+          <span class="doc-tag">Referência visual</span>
+          <span class="doc-tag">Tapume</span>
+        </div>
+        <div class="doc-highlights">
+          <div class="doc-hl">· Loja 259 térreo · 45,47m² · porta de enrolar metálica</div>
+          <div class="doc-hl">· Vizinho esquerdo: Usaflex (Renner) · direito: Copenhagen</div>
+          <div class="doc-hl">· Corredor com Vivara, Riachuelo, Óticas Carol visíveis</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</body>
+</html>
